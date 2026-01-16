@@ -36,7 +36,7 @@ public class ChessPiece {
      */
     public ChessGame.TeamColor getTeamColor() {
         return pieceColor;
-        }
+    }
 
     /**
      * @return which type of chess piece this piece is
@@ -57,29 +57,23 @@ public class ChessPiece {
         /** Getting the piece at the location in question  */
         ChessPiece piece = board.getPiece(myPosition);
 
-        /** checking piece type */
-        if (piece.getPieceType() == PieceType.BISHOP){
-            new PieceMovesCalculator(board, myPosition, piece);
 
-        }
-        else if (piece.getPieceType() == PieceType.KING){
+        /** checking piece type */
+        if (piece.getPieceType() == PieceType.BISHOP) {
+            PieceMovesCalculator moveSet = new PieceMovesCalculator(board, myPosition);
+            return moveSet.getMoves();
+        } else if (piece.getPieceType() == PieceType.KING) {
             throw new RuntimeException("Not implemented");
-        }
-        else if (piece.getPieceType() == PieceType.KNIGHT){
+        } else if (piece.getPieceType() == PieceType.KNIGHT) {
             throw new RuntimeException("Not implemented");
-        }
-        else if (piece.getPieceType() == PieceType.PAWN){
+        } else if (piece.getPieceType() == PieceType.PAWN) {
             throw new RuntimeException("Not implemented");
-        }
-        else if (piece.getPieceType() == PieceType.QUEEN){
+        } else if (piece.getPieceType() == PieceType.QUEEN) {
             throw new RuntimeException("Not implemented");
-        }
-        else if (piece.getPieceType() == PieceType.ROOK){
+        } else if (piece.getPieceType() == PieceType.ROOK) {
             throw new RuntimeException("Not implemented");
-        }
-        else{
+        } else {
             throw new RuntimeException("If you're here, you really have a problem.");
         }
-
     }
 }
