@@ -2,6 +2,7 @@ package chess;
 import MoveCalculators.BishopMovesCalculator;
 
 import java.util.Collection;
+import java.util.Objects;
 
 public class PieceMovesCalculator {
         protected final ChessBoard board;
@@ -25,5 +26,19 @@ public class PieceMovesCalculator {
             return allMoves;
         }
         throw new RuntimeException("Ya dun Goofed see (PieceMovesCalculator)");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        PieceMovesCalculator that = (PieceMovesCalculator) o;
+        return Objects.equals(board, that.board) && Objects.equals(position, that.position) && pieceTYPE == that.pieceTYPE;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(board, position, pieceTYPE);
     }
 }
