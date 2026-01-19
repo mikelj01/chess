@@ -1,5 +1,5 @@
 package chess;
-import MoveCalculators.BishopMovesCalculator;
+import MoveCalculators.*;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -24,6 +24,35 @@ public class PieceMovesCalculator {
             BishopMovesCalculator moveCalc = new BishopMovesCalculator(board, position);
             Collection<ChessMove> allMoves = moveCalc.getMoves(board, position);
             return allMoves;
+        } else if(pieceTYPE.equals(ChessPiece.PieceType.KING)){
+            KingMovesCalculator moveCalc = new KingMovesCalculator(board, position);
+            Collection<ChessMove> allMoves = moveCalc.getMoves(board, position);
+            return allMoves;
+
+        }
+        else if(pieceTYPE.equals(ChessPiece.PieceType.KNIGHT)){
+            KnightMovesCalculator moveCalc = new KnightMovesCalculator(board, position);
+            Collection<ChessMove> allMoves = moveCalc.getMoves(board, position);
+            return allMoves;
+
+        }
+        else if(pieceTYPE.equals(ChessPiece.PieceType.PAWN)){
+            PawnMovesCalculator moveCalc = new PawnMovesCalculator(board, position);
+            Collection<ChessMove> allMoves = moveCalc.getMoves(board, position);
+            return allMoves;
+
+        }
+        else if(pieceTYPE.equals(ChessPiece.PieceType.QUEEN)){
+            QueenMovesCalculator moveCalc = new QueenMovesCalculator(board, position);
+            Collection<ChessMove> allMoves = moveCalc.getMoves(board, position);
+            return allMoves;
+
+        }
+        else if(pieceTYPE.equals(ChessPiece.PieceType.ROOK)){
+            RookMovesCalculator moveCalc = new RookMovesCalculator(board, position);
+            Collection<ChessMove> allMoves = moveCalc.getMoves(board, position);
+            return allMoves;
+
         }
         throw new RuntimeException("Ya dun Goofed see (PieceMovesCalculator)");
     }

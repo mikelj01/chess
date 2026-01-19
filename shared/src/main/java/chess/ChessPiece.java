@@ -55,25 +55,8 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         /** Getting the piece at the location in question  */
-        ChessPiece piece = board.getPiece(myPosition);
+        PieceMovesCalculator moveSet = new PieceMovesCalculator(board, myPosition);
+        return moveSet.getMoves();
 
-
-        /** checking piece type */
-        if (piece.getPieceType() == PieceType.BISHOP) {
-            PieceMovesCalculator moveSet = new PieceMovesCalculator(board, myPosition);
-            return moveSet.getMoves();
-        } else if (piece.getPieceType() == PieceType.KING) {
-            throw new RuntimeException("Not implemented");
-        } else if (piece.getPieceType() == PieceType.KNIGHT) {
-            throw new RuntimeException("Not implemented");
-        } else if (piece.getPieceType() == PieceType.PAWN) {
-            throw new RuntimeException("Not implemented");
-        } else if (piece.getPieceType() == PieceType.QUEEN) {
-            throw new RuntimeException("Not implemented");
-        } else if (piece.getPieceType() == PieceType.ROOK) {
-            throw new RuntimeException("Not implemented");
-        } else {
-            throw new RuntimeException("If you're here, you really have a problem.");
-        }
     }
 }
