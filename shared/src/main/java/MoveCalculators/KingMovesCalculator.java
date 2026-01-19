@@ -158,4 +158,18 @@ public class KingMovesCalculator {
         }
         return moves;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        KingMovesCalculator that = (KingMovesCalculator) o;
+        return row == that.row && col == that.col && Objects.equals(board, that.board) && Objects.equals(startPosition, that.startPosition) && Color == that.Color;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(board, startPosition, Color, row, col);
+    }
 }
