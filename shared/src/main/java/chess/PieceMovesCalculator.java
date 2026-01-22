@@ -8,12 +8,14 @@ public class PieceMovesCalculator {
         protected final ChessBoard board;
         protected final ChessPosition position;
         protected final ChessPiece.PieceType pieceTYPE;
+
     public PieceMovesCalculator(ChessBoard board, ChessPosition position){
         this.board = board;
         this.position = position;
         ChessPiece piece = board.getPiece(position);
         ChessPiece.PieceType type = piece.getPieceType();
         this.pieceTYPE = type;
+
 
     }
     /**-------------ADD A RETURN VALUE TO THIS
