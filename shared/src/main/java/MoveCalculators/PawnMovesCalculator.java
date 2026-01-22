@@ -92,7 +92,7 @@ public class PawnMovesCalculator {
         col1 = col;
 
         /*Capture Logic*/
-        if(row1 < 8 && row1 > 1){
+        if(Color == ChessGame.TeamColor.WHITE && row1 < 7 || Color == ChessGame.TeamColor.BLACK && row1 > 2){
             if(Color == ChessGame.TeamColor.WHITE){
                 row1++;
                 if(board.getPiece(new ChessPosition(row1, col1 + 1)) != null && board.getPiece(new ChessPosition(row1, col1 + 1)).getTeamColor() == ChessGame.TeamColor.BLACK){
