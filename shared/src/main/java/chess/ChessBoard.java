@@ -51,8 +51,9 @@ public class ChessBoard {
      */
     public void resetBoard() {
         int col1 = 1;
-        int row1 = 2;
+        int row1 = 1;
         while (col1 < 9){
+            row1 = 1;
             while(row1 < 9){
                 if(row1 == 2){
                     addPiece(new ChessPosition(row1, col1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
@@ -100,9 +101,28 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        return "ChessBoard{" +
-                "squares=" + Arrays.toString(squares) +
-                '}';
+        int col1 = 1;
+        int row1 = 1;
+        String boardText = "";
+        while (row1 < 9){
+            col1 = 1;
+            while(col1 < 9){
+                boardText += "|";
+                ChessPiece peace = getPiece(new ChessPosition(row1, col1));
+                if(peace == null){
+                    boardText += " ";
+                }
+                else{
+                    boardText += peace.toString();
+                }
+                col1++;
+            }
+            boardText += "|";
+            boardText += "\n";
+            row1++;
+        }
+        System.out.print(boardText);
+        return boardText;
     }
 
     @Override
