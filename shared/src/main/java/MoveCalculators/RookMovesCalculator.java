@@ -33,7 +33,9 @@ public class RookMovesCalculator {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
-                    moves.add(new ChessMove(startPosition, newPos, null));
+                    ChessMove newMove = new ChessMove(startPosition, newPos, null);
+                    newMove.capMove = true;
+                    moves.add(newMove);
                     row1 = 8;
 
                 }
@@ -54,7 +56,9 @@ public class RookMovesCalculator {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
-                    moves.add(new ChessMove(startPosition, newPos, null));
+                    ChessMove newMove = new ChessMove(startPosition, newPos, null);
+                    newMove.capMove = true;
+                    moves.add(newMove);
                     row1 = 1;
 
                 }
@@ -74,7 +78,9 @@ public class RookMovesCalculator {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
-                    moves.add(new ChessMove(startPosition, newPos, null));
+                    ChessMove newMove = new ChessMove(startPosition, newPos, null);
+                    newMove.capMove = true;
+                    moves.add(newMove);
                     col1 = 1;
 
                 }
@@ -94,7 +100,9 @@ public class RookMovesCalculator {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
-                    moves.add(new ChessMove(startPosition, newPos, null));
+                    ChessMove newMove = new ChessMove(startPosition, newPos, null);
+                    newMove.capMove = true;
+                    moves.add(newMove);
                     col1 = 8;
 
                 }

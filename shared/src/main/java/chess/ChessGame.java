@@ -56,14 +56,24 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-
-        if(board.getPiece(startPosition)!= null && !checkChecker()) {
-            return board.getPiece(startPosition).pieceMoves(board, startPosition);
+        ChessPiece piece = board.getPiece(startPosition);
+        Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
+        if(board.getPiece(startPosition)!= null) {
+            return moves;
         }
         return null;
     }
 
-    public boolean checkChecker() {
+    public boolean checkChecker(ChessPiece piece, Collection<ChessMove> moves) {
+        if(piece.getPieceType() == ChessPiece.PieceType.KING){
+            //!!!!!!!
+            //!!!!!!
+            //!!!!!!!
+            return true;
+        }
+        else{
+
+        }
 
         return false;
     }

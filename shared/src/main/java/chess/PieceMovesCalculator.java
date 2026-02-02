@@ -45,8 +45,10 @@ public class PieceMovesCalculator {
 
         }
         else if(pieceTYPE.equals(ChessPiece.PieceType.QUEEN)){
-            QueenMovesCalculator moveCalc = new QueenMovesCalculator(board, position);
+            BishopMovesCalculator moveCalc = new BishopMovesCalculator(board, position);
             Collection<ChessMove> allMoves = moveCalc.getMoves(board, position);
+            RookMovesCalculator also = new RookMovesCalculator(board, position);
+            allMoves.addAll(also.getMoves(board, position));
             return allMoves;
 
         }

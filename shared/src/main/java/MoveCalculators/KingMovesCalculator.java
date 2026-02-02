@@ -38,7 +38,9 @@ public class KingMovesCalculator {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
-                    moves.add(new ChessMove(startPosition, newPos, null));
+                    ChessMove newMove = new ChessMove(startPosition, newPos, null);
+                    newMove.capMove = true;
+                    moves.add(newMove);
                 }
             } else {
                 moves.add(new ChessMove(startPosition, newPos, null));
@@ -54,7 +56,9 @@ public class KingMovesCalculator {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
-                    moves.add(new ChessMove(startPosition, newPos, null));
+                    ChessMove newMove = new ChessMove(startPosition, newPos, null);
+                    newMove.capMove = true;
+                    moves.add(newMove);
                 }
             } else {
                 moves.add(new ChessMove(startPosition, newPos, null));
@@ -71,7 +75,9 @@ public class KingMovesCalculator {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
-                    moves.add(new ChessMove(startPosition, newPos, null));
+                    ChessMove newMove = new ChessMove(startPosition, newPos, null);
+                    newMove.capMove = true;
+                    moves.add(newMove);
                 }
             } else {
                 moves.add(new ChessMove(startPosition, newPos, null));
@@ -87,7 +93,9 @@ public class KingMovesCalculator {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
-                    moves.add(new ChessMove(startPosition, newPos, null));
+                    ChessMove newMove = new ChessMove(startPosition, newPos, null);
+                    newMove.capMove = true;
+                    moves.add(newMove);
                 }
             } else {
                 moves.add(new ChessMove(startPosition, newPos, null));
@@ -103,7 +111,9 @@ public class KingMovesCalculator {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
-                    moves.add(new ChessMove(startPosition, newPos, null));
+                    ChessMove newMove = new ChessMove(startPosition, newPos, null);
+                    newMove.capMove = true;
+                    moves.add(newMove);
                 }
             } else {
                 moves.add(new ChessMove(startPosition, newPos, null));
@@ -118,7 +128,9 @@ public class KingMovesCalculator {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
-                    moves.add(new ChessMove(startPosition, newPos, null));
+                    ChessMove newMove = new ChessMove(startPosition, newPos, null);
+                    newMove.capMove = true;
+                    moves.add(newMove);
                 }
             } else {
                 moves.add(new ChessMove(startPosition, newPos, null));
@@ -135,7 +147,9 @@ public class KingMovesCalculator {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
-                    moves.add(new ChessMove(startPosition, newPos, null));
+                    ChessMove newMove = new ChessMove(startPosition, newPos, null);
+                    newMove.capMove = true;
+                    moves.add(newMove);
                 }
             } else {
                 moves.add(new ChessMove(startPosition, newPos, null));
@@ -150,7 +164,9 @@ public class KingMovesCalculator {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
-                    moves.add(new ChessMove(startPosition, newPos, null));
+                    ChessMove newMove = new ChessMove(startPosition, newPos, null);
+                    newMove.capMove = true;
+                    moves.add(newMove);
                 }
             } else {
                 moves.add(new ChessMove(startPosition, newPos, null));
