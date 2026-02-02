@@ -34,7 +34,7 @@ public class KingMovesCalculator {
 
 
 
-        if (row1 > 1 && row1 < 8 && col1 > 1 && col1 < 8){
+        if (row1 >= 1 && row1 <= 8 && col1 >= 1 && col1 <= 8){
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
@@ -50,7 +50,7 @@ public class KingMovesCalculator {
         row1--;
         col1++;
 
-        if (row1 > 1 && row1 < 8 && col1 > 1 && col1 < 8) {
+        if (row1 >= 1 && row1 <= 8 && col1 >= 1 && col1 <= 8) {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
@@ -67,7 +67,7 @@ public class KingMovesCalculator {
         row1--;
         col1--;
 
-        if (row1 > 1 && row1 < 8 && col1 > 1 && col1 < 8) {
+        if (row1 >= 1 && row1 <= 8 && col1 >= 1 && col1 <= 8) {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
@@ -83,7 +83,7 @@ public class KingMovesCalculator {
         row1++;
         col1--;
 
-        if (row1 > 1 && row1 < 8 && col1 > 1 && col1 < 8) {
+        if (row1 >= 1 && row1 <= 8 && col1 >= 1 && col1 <= 8) {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
@@ -99,7 +99,7 @@ public class KingMovesCalculator {
         row1++;
 
 
-        if (row1 > 1 && row1 < 8 && col1 > 1 && col1 < 8) {
+        if (row1 >= 1 && row1 <= 8 && col1 >= 1 && col1 <= 8) {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
@@ -114,7 +114,7 @@ public class KingMovesCalculator {
 
         col1++;
 
-        if (row1 > 1 && row1 < 8 && col1 > 1 && col1 < 8) {
+        if (row1 >= 1 && row1 <= 8 && col1 >= 1 && col1 <= 8) {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
@@ -131,7 +131,7 @@ public class KingMovesCalculator {
         row1--;
 
 
-        if (row1 > 1 && row1 < 8 && col1 > 1 && col1 < 8) {
+        if (row1 >= 1 && row1 <= 8 && col1 >= 1 && col1 <= 8) {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {
@@ -146,7 +146,7 @@ public class KingMovesCalculator {
 
         col1--;
 
-        if (row1 > 1 && row1 < 8 && col1 > 1 && col1 < 8) {
+        if (row1 >= 1 && row1 <= 8 && col1 >= 1 && col1 <= 8) {
             ChessPosition newPos = new ChessPosition(row1, col1);
             if (board.getPiece(newPos) != null) {
                 if (board.getPiece(newPos).getTeamColor() != Color) {

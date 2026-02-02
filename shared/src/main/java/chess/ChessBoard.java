@@ -12,9 +12,12 @@ import java.util.Objects;
 public class ChessBoard {
 
     ChessPiece[][] squares = new ChessPiece[8][8];
-
+    ChessPosition WKPos;
+    ChessPosition BKPos;
     public ChessBoard() {
-        
+        this.WKPos = new ChessPosition(1, 5);
+        this.BKPos = new ChessPosition(8, 5);
+
     }
 
     /**
