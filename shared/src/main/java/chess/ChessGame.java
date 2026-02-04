@@ -58,21 +58,70 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
         Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
-        if(board.getPiece(startPosition)!= null) {
-            return moves;
+        if(board.getPiece(startPosition)== null) {
+            return null;
         }
-        return null;
+        //For each move, make a Phantom move and check if it causes problems.  If it does, remove it.
+            for (ChessMove move : moves){
+                ChessBoard newBoard = board;
+                ChessPosition start = move.getStartPosition();
+                ChessPosition end = move.getEndPosition();
+                newBoard.removePiece(start);
+                newBoard.addPiece(end, piece);
+                if (checkChecker(newBoard)){
+                    moves.remove(move);
+                }
+            }
+            return moves;
     }
 
-    public boolean checkChecker(ChessPiece piece, Collection<ChessMove> moves) {
-        if(piece.getPieceType() == ChessPiece.PieceType.KING){
-            //!!!!!!!
-            //!!!!!!
-            //!!!!!!!
-            return true;
+    private boolean checkChecker(ChessBoard newBoard) {
+        //Find the King
+        ChessPosition kingPos;
+        if (tTurn == TeamColor.WHITE ) {
+            kingPos = newBoard.WKPos;
+        }
+        else if (tTurn == TeamColor.BLACK ) {
+            kingPos = newBoard.BKPos;
         }
         else{
+            KingFinder finder = new KingFinder(board, tTurn);
+            kingPos = finder.findIt();
+        }
+        if(kingPos == null){
+            throw new RuntimeException("You Lost Your King");
+        }
+        ChessPiece pp = null;
+        int counter = 1;
+        while(counter < 6) {
+            if (counter == 1) {
+                pp = new ChessPiece(tTurn, ChessPiece.PieceType.BISHOP);
+            }
+            if (counter == 2) {
+                pp = new ChessPiece(tTurn, ChessPiece.PieceType.KNIGHT);
+            }
+            if (counter == 3) {
+                pp = new ChessPiece(tTurn, ChessPiece.PieceType.ROOK);
+            }
+            if (counter == 4) {
+                pp = new ChessPiece(tTurn, ChessPiece.PieceType.QUEEN);
+            }
+            if (counter == 5) {
+                pp = new ChessPiece(tTurn, ChessPiece.PieceType.PAWN);
+            }
+            newBoard.addPiece(kingPos, pp);
+            PieceMovesCalculator sChecker = new PieceMovesCalculator(newBoard, kingPos);
+            Collection<ChessMove> spots = sChecker.getMoves();
+            for(ChessMove spot : spots){
+                if(newBoard.getPiece(spot.getEndPosition())!=null){
+                    ChessPiece.PieceType type = newBoard.getPiece(spot.getEndPosition()).getPieceType();
+                    if(type == pp.getPieceType() && spot.capMove){
+                        return true;
+                    }
+                }
 
+            }
+        counter++;
         }
 
         return false;
