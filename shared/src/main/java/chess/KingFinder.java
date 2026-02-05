@@ -13,10 +13,15 @@ public class KingFinder {
         int col = 1;
         ChessPosition pos = null;
         while(row < 9){
+            col = 1;
             while(col < 9){
                 ChessPosition position = new ChessPosition(row, col);
                 ChessPiece piece = board.getPiece(position);
-                if(piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == color){
+                if(piece == null){
+                    col++;
+                    col--;
+                }
+                else if(piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == color){
                     pos = position;
                 }
                 col++;

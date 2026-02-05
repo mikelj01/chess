@@ -11,7 +11,7 @@ import java.util.Objects;
  */
 public class ChessBoard {
 
-    ChessPiece[][] squares = new ChessPiece[8][8];
+    private ChessPiece[][] squares = new ChessPiece[8][8];
     ChessPosition WKPos;
     ChessPosition BKPos;
     public ChessBoard() {
@@ -19,7 +19,17 @@ public class ChessBoard {
         this.BKPos = new ChessPosition(8, 5);
 
     }
-
+    public ChessBoard(ChessBoard old) {
+        squares = new ChessPiece[8][8];
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                ChessPiece piece = old.squares[r][c];
+                if (piece != null) {
+                    squares[r][c] = new ChessPiece(piece);
+                }
+            }
+        }
+    }
     /**
      * Adds a chess piece to the chessboard
      *

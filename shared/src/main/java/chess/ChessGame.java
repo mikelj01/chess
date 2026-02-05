@@ -1,6 +1,8 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -62,26 +64,28 @@ public class ChessGame {
             return null;
         }
         //For each move, make a Phantom move and check if it causes problems.  If it does, remove it.
+        Collection<ChessMove> legMoves = new HashSet<ChessMove>();
+            //System.out.print(board.toString());
             for (ChessMove move : moves){
-                ChessBoard newBoard = board;
+                ChessBoard newBoard = new ChessBoard(board);
                 ChessPosition start = move.getStartPosition();
                 ChessPosition end = move.getEndPosition();
                 newBoard.removePiece(start);
                 newBoard.addPiece(end, piece);
-                if (checkChecker(newBoard)){
-                    moves.remove(move);
+                if (!checkChecker(newBoard)){
+                    legMoves.add(move);
                 }
             }
-            return moves;
+            return legMoves;
     }
 
     private boolean checkChecker(ChessBoard newBoard) {
         //Find the King
         ChessPosition kingPos;
-        if (tTurn == TeamColor.WHITE ) {
+        if (tTurn == TeamColor.WHITE && board.getPiece(new ChessPosition(1, 5)) != null) {
             kingPos = newBoard.WKPos;
         }
-        else if (tTurn == TeamColor.BLACK ) {
+        else if (tTurn == TeamColor.BLACK && board.getPiece(new ChessPosition(8, 5)) != null) {
             kingPos = newBoard.BKPos;
         }
         else{
@@ -150,17 +154,21 @@ public class ChessGame {
             //Checking valid moves
             Collection<ChessMove> cheatChecker = validMoves(start);
 
-            if (pp != null && cheatChecker.contains(move)) {
-                piece = new ChessPiece(piece.getTeamColor(), pp);
-            } else if (pp == null && cheatChecker.contains(move)) {
-                piece = new ChessPiece(piece.getTeamColor(), piece.getPieceType());
-            } else{
-                throw new InvalidMoveException("Invalid Move");
-            }
+
 
             if(piece != null) {
-                board.removePiece(start);
-                board.addPiece(end, piece);
+                if (pp != null && cheatChecker.contains(move)) {
+                    piece = new ChessPiece(piece.getTeamColor(), pp);
+                    board.removePiece(start);
+                    board.addPiece(end, piece);
+                } else if (pp == null && cheatChecker.contains(move)) {
+                    piece = new ChessPiece(piece.getTeamColor(), piece.getPieceType());
+                    board.removePiece(start);
+                    board.addPiece(end, piece);
+                } else{
+                    throw new InvalidMoveException("Invalid Move");
+                }
+
 
                 //updating king position variable
                 if(piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == TeamColor.WHITE){
