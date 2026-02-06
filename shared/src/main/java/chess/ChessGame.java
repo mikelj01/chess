@@ -22,8 +22,6 @@ public class ChessGame {
         this.board = new ChessBoard();
         this.inCheckW = false;
         this.inCheckB = false;
-
-
     }
 
     /**
@@ -72,26 +70,19 @@ public class ChessGame {
                 ChessPosition end = move.getEndPosition();
                 newBoard.removePiece(start);
                 newBoard.addPiece(end, piece);
-                if (!checkChecker(newBoard)){
+                if (!checkChecker(newBoard, end)){
                     legMoves.add(move);
                 }
             }
             return legMoves;
     }
 
-    private boolean checkChecker(ChessBoard newBoard) {
+    private boolean checkChecker(ChessBoard newBoard, ChessPosition pos) {
         //Find the King
         ChessPosition kingPos;
-        if (tTurn == TeamColor.WHITE && board.getPiece(new ChessPosition(1, 5)) != null) {
-            kingPos = newBoard.WKPos;
-        }
-        else if (tTurn == TeamColor.BLACK && board.getPiece(new ChessPosition(8, 5)) != null) {
-            kingPos = newBoard.BKPos;
-        }
-        else{
-            KingFinder finder = new KingFinder(board, tTurn);
+        ChessGame.TeamColor color = newBoard.getPiece(pos).getTeamColor();
+            KingFinder finder = new KingFinder(board, color);
             kingPos = finder.findIt();
-        }
         if(kingPos == null){
             throw new RuntimeException("You Lost Your King");
         }
@@ -99,25 +90,28 @@ public class ChessGame {
         int counter = 1;
         while(counter < 6) {
             if (counter == 1) {
-                pp = new ChessPiece(tTurn, ChessPiece.PieceType.BISHOP);
+                pp = new ChessPiece(color, ChessPiece.PieceType.BISHOP);
             }
             if (counter == 2) {
-                pp = new ChessPiece(tTurn, ChessPiece.PieceType.KNIGHT);
+                pp = new ChessPiece(color, ChessPiece.PieceType.KNIGHT);
             }
             if (counter == 3) {
-                pp = new ChessPiece(tTurn, ChessPiece.PieceType.ROOK);
+                pp = new ChessPiece(color, ChessPiece.PieceType.ROOK);
             }
             if (counter == 4) {
-                pp = new ChessPiece(tTurn, ChessPiece.PieceType.QUEEN);
+                pp = new ChessPiece(color, ChessPiece.PieceType.QUEEN);
             }
             if (counter == 5) {
-                pp = new ChessPiece(tTurn, ChessPiece.PieceType.PAWN);
+                pp = new ChessPiece(color, ChessPiece.PieceType.PAWN);
             }
+
             newBoard.addPiece(kingPos, pp);
             PieceMovesCalculator sChecker = new PieceMovesCalculator(newBoard, kingPos);
             Collection<ChessMove> spots = sChecker.getMoves();
             for(ChessMove spot : spots){
-                if(newBoard.getPiece(spot.getEndPosition())!=null){
+                ChessPosition endPT = spot.getEndPosition();
+                ChessPiece piece1 = newBoard.getPiece(endPT);
+                if(piece1 != null){
                     ChessPiece.PieceType type = newBoard.getPiece(spot.getEndPosition()).getPieceType();
                     if(type == pp.getPieceType() && spot.capMove){
                         return true;

@@ -33,15 +33,11 @@ public class BishopMovesCalculator {
                     newMove.capMove = true;
                     moves.add(newMove);
                     row1 = 8;
-
-
                 }
                 else {
                     row1 = 8;
-
                 }
             }
-
             else{
                 moves.add(new ChessMove(startPosition, newPos, null));
             }
@@ -58,14 +54,11 @@ public class BishopMovesCalculator {
                     newMove.capMove = true;
                     moves.add(newMove);
                     row1 = 1;
-
                 }
                 else {
                     row1 = 1;
-
                 }
             }
-
             else{
                 moves.add(new ChessMove(startPosition, newPos, null));
             }

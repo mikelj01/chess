@@ -15,10 +15,10 @@ public class ChessBoard {
     ChessPosition WKPos;
     ChessPosition BKPos;
     public ChessBoard() {
-        this.WKPos = new ChessPosition(1, 5);
-        this.BKPos = new ChessPosition(8, 5);
-
+        this.WKPos = null;
+        this.BKPos = null;
     }
+
     public ChessBoard(ChessBoard old) {
         squares = new ChessPiece[8][8];
         for (int r = 0; r < 8; r++) {
@@ -28,7 +28,9 @@ public class ChessBoard {
                     squares[r][c] = new ChessPiece(piece);
                 }
             }
+
         }
+
     }
     /**
      * Adds a chess piece to the chessboard
@@ -106,7 +108,8 @@ public class ChessBoard {
         addPiece(new ChessPosition(8, 4), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN));
         addPiece(new ChessPosition(8, 5), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
 
-
+        this.WKPos = new ChessPosition(1, 5);
+        this.BKPos = new ChessPosition(8, 5);
 
 
     }
@@ -134,7 +137,7 @@ public class ChessBoard {
             boardText += "\n";
             row1++;
         }
-        System.out.print(boardText);
+
         return boardText;
     }
 

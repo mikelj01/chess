@@ -22,7 +22,7 @@ public class KingFinder {
                     col--;
                 }
                 else if(piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == color){
-                    pos = position;
+                    return  position;
                 }
                 col++;
             }

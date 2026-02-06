@@ -26,7 +26,8 @@ public class PieceMovesCalculator {
             BishopMovesCalculator moveCalc = new BishopMovesCalculator(board, position);
             Collection<ChessMove> allMoves = moveCalc.getMoves(board, position);
             return allMoves;
-        } else if(pieceTYPE.equals(ChessPiece.PieceType.KING)){
+        }
+        else if(pieceTYPE.equals(ChessPiece.PieceType.KING)){
             KingMovesCalculator moveCalc = new KingMovesCalculator(board, position);
             Collection<ChessMove> allMoves = moveCalc.getMoves(board, position);
             return allMoves;
