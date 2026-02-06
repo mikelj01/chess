@@ -81,14 +81,14 @@ public class ChessGame {
         //Find the King
         ChessPosition kingPos;
         ChessGame.TeamColor color = newBoard.getPiece(pos).getTeamColor();
-            KingFinder finder = new KingFinder(board, color);
+            KingFinder finder = new KingFinder(newBoard, color);
             kingPos = finder.findIt();
         if(kingPos == null){
             throw new RuntimeException("You Lost Your King");
         }
         ChessPiece pp = null;
         int counter = 1;
-        while(counter < 6) {
+        while(counter < 7) {
             if (counter == 1) {
                 pp = new ChessPiece(color, ChessPiece.PieceType.BISHOP);
             }
@@ -103,6 +103,9 @@ public class ChessGame {
             }
             if (counter == 5) {
                 pp = new ChessPiece(color, ChessPiece.PieceType.PAWN);
+            }
+            if (counter == 6) {
+                pp = new ChessPiece(color, ChessPiece.PieceType.KING);
             }
 
             newBoard.addPiece(kingPos, pp);
