@@ -19,6 +19,9 @@ public class ChessBoard {
         this.BKPos = null;
     }
 
+    /**
+     *Creates a clone with the same values
+     * **/
     public ChessBoard(ChessBoard old) {
         squares = new ChessPiece[8][8];
         for (int r = 0; r < 8; r++) {
@@ -32,6 +35,8 @@ public class ChessBoard {
         }
 
     }
+
+
     /**
      * Adds a chess piece to the chessboard
      *
@@ -41,6 +46,8 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
         squares[position.getRow()-1][position.getColumn()-1] = piece;
     }
+
+
     /**
      * Gets a chess piece on the chessboard
      *
@@ -56,9 +63,14 @@ public class ChessBoard {
                 return null;
             }
     }
+
+    /**
+ * Removes a chess piece from the chess board**/
     public void removePiece(ChessPosition position){
         squares[position.getRow()-1][position.getColumn()-1] = null;
     }
+
+
 
     /**
      * Sets the board to the default starting board
@@ -111,33 +123,25 @@ public class ChessBoard {
         this.WKPos = new ChessPosition(1, 5);
         this.BKPos = new ChessPosition(8, 5);
 
-
     }
 
 
     @Override
     public String toString() {
-        int col1 = 1;
-        int row1 = 1;
         String boardText = "";
-        while (row1 < 9){
-            col1 = 1;
-            while(col1 < 9){
+        for(ChessPiece[] inner : squares){
+            for(ChessPiece piece : inner){
                 boardText += "|";
-                ChessPiece peace = getPiece(new ChessPosition(row1, col1));
-                if(peace == null){
+                if(piece == null){
                     boardText += " ";
                 }
                 else{
-                    boardText += peace.toString();
+                    boardText += piece.toString();
                 }
-                col1++;
             }
             boardText += "|";
             boardText += "\n";
-            row1++;
         }
-
         return boardText;
     }
 

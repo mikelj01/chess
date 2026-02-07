@@ -20,10 +20,17 @@ public class ChessPiece {
         this.type = type;
         this.pieceColor = pieceColor;
     }
+
+    /**
+     * Creates a clone of a Chess Piece**/
     public ChessPiece(ChessPiece old) {
         this.pieceColor = old.pieceColor;
         this.type = old.type;
     }
+
+
+
+
     /**
      * The various different chess piece options
      */
@@ -80,27 +87,52 @@ public class ChessPiece {
 
     @Override
     public String toString() {
-        if(type == PieceType.KING){
-            return "K";
+        if(pieceColor == ChessGame.TeamColor.WHITE) {
+            if (type == PieceType.KING) {
+                return "K";
+            }
+            if (type == PieceType.QUEEN) {
+                return "Q";
+            }
+            if (type == PieceType.BISHOP) {
+                return "B";
+            }
+            if (type == PieceType.KNIGHT) {
+                return "N";
+            }
+            if (type == PieceType.ROOK) {
+                return "R";
+            }
+            if (type == PieceType.PAWN) {
+                return "P";
+            } else {
+                return "Ya dun messed up.  This piece ain't got no type.";
+            }
         }
-        if(type == PieceType.QUEEN){
-            return "Q";
+        if(pieceColor == ChessGame.TeamColor.BLACK) {
+            if (type == PieceType.KING) {
+                return "k";
+            }
+            if (type == PieceType.QUEEN) {
+                return "q";
+            }
+            if (type == PieceType.BISHOP) {
+                return "b";
+            }
+            if (type == PieceType.KNIGHT) {
+                return "n";
+            }
+            if (type == PieceType.ROOK) {
+                return "r";
+            }
+            if (type == PieceType.PAWN) {
+                return "p";
+            } else {
+                return "Ya dun messed up.  This piece ain't got no type.";
+            }
         }
-        if(type == PieceType.BISHOP){
-            return "B";
-        }
-        if(type == PieceType.KNIGHT){
-            return "N";
-        }
-        if(type == PieceType.ROOK){
-            return "R";
-        }
-        if(type == PieceType.PAWN){
-            return "P";
-        }
-
-        else{
-            return "Ya dun messed up.  This piece ain't got no type.";
+        else {
+            return "Ya dun messed up.  This piece ain't got no Color.";
         }
     }
 }
