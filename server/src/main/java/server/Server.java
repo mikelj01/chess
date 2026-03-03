@@ -1,24 +1,29 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.MemUserDA;
+import dataaccess.UserDataAccess;
 import io.javalin.*;
 import io.javalin.http.Context;
-import model.AuthData;
-import model.LoginRequest;
-import model.LoginResult;
+import model.*;
 import org.jetbrains.annotations.NotNull;
-import model.UserData;
 import service.UserException;
-import service.userService;
+import service.UserService;
+
 
 public class Server {
-
+    UserDataAccess UserDB;
+    UserService uServe;
     private final Javalin javalin;
 
     public Server() {
+        this.UserDB = new MemUserDA();
+        this.uServe = new UserService(UserDB);
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
         javalin.post("/user", this::register);
-        javalin.post("/session", this::login);
+        javalin.post("/session", this::logInOut);
+
+        //javalin.post("/db", this::dataStuff);
         // Register your endpoints and exception handlers here.
 
     }
@@ -27,18 +32,25 @@ public class Server {
 
         var serializer = new Gson();
         UserData user = serializer.fromJson(ctx.body(), UserData.class);
-        user = userService.register(user);
+        user = uServe.register(user);
     }
 
-    private void login(@NotNull Context ctx){
+    private void logInOut(@NotNull Context ctx){
         try{
         var serializer = new Gson();
         LoginRequest user = serializer.fromJson(ctx.body(), LoginRequest.class);
-        AuthData auth = userService.login(user);
+        AuthData auth = uServe.login(user);
         }catch (UserException ex){
             System.out.print(ex);
         }
     }
+
+    /* I've Set the Delete Fungtion up this way so that in the future
+    If I want to add more methods that work on the database, I can.*/
+//    private void dataStuff(@NotNull Context ctx){
+//        var serializer = new Gson();
+//        DataInstruction data =
+//    }
 
     public int run(int desiredPort) {
         javalin.start(desiredPort);
