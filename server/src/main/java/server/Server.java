@@ -1,12 +1,13 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.MemUserDA;
-import dataaccess.UserDataAccess;
+import dataaccess.*;
 import io.javalin.*;
 import io.javalin.http.Context;
 import model.*;
 import org.jetbrains.annotations.NotNull;
+import service.AuthService;
+import service.GameService;
 import service.UserException;
 import service.UserService;
 
@@ -14,11 +15,19 @@ import service.UserService;
 public class Server {
     UserDataAccess UserDB;
     UserService uServe;
+    GameDataAccess gameDB;
+    GameService gServe;
+    AuthDataAccess authDB;
+    AuthService aServe;
     private final Javalin javalin;
 
     public Server() {
         this.UserDB = new MemUserDA();
+        this.gameDB = new MemGameDA();
+        this.authDB = new MemAuthDA();
         this.uServe = new UserService(UserDB);
+        this.gServe = new GameService(gameDB);
+        this.aServe = new AuthService(authDB);
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
         javalin.post("/user", this::register);
         javalin.post("/session", this::logInOut);

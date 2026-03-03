@@ -6,10 +6,7 @@ import model.UserData;
 import server.websocket.AuthGenerator;
 
 public interface AuthDataAccess {
-    static AuthData createAuth(LoginRequest user) throws DataAccessException{
-        AuthData userAuth = AuthGenerator.genAuth(user.username());
-        return userAuth;
-    };
+    AuthData createAuth(LoginRequest user) throws DataAccessException;
     void deleteAuth(String authToken) throws DataAccessException;
     AuthData getAuth(String authToken) throws DataAccessException;
 }
