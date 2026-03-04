@@ -7,6 +7,10 @@ import server.websocket.AuthGenerator;
 
 public interface AuthDataAccess {
     AuthData createAuth(String userName) throws DataAccessException;
+
     void deleteAuth(String authToken) throws DataAccessException;
+
     AuthData getAuth(String authToken) throws DataAccessException;
+
+    void clear();
 }

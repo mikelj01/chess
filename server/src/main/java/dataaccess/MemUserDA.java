@@ -39,4 +39,8 @@ public class MemUserDA implements UserDataAccess{
         userDataMap.put(userName, user);
         return userDataMap.get(userName);
     }
+
+    public void clear(){
+        userDataMap.clear();
+    }
 }

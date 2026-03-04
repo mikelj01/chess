@@ -56,4 +56,8 @@ public class MemGameDA implements GameDataAccess {
         }
         return games;
     }
+
+    public void clear(){
+        games.clear();
+    }
 }

@@ -13,6 +13,7 @@ public class MemAuthDA implements AuthDataAccess{
     public MemAuthDA(){
         this.authDataMap = new HashMap<>();
     }
+
     @Override
     public AuthData createAuth(String userName) throws DataAccessException {
         AuthData auth = AuthGenerator.genAuth(userName);
@@ -33,5 +34,9 @@ public class MemAuthDA implements AuthDataAccess{
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
         return authDataMap.get(authToken);
+    }
+
+    public void clear(){
+        authDataMap.clear();
     }
 }

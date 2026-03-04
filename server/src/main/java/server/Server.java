@@ -36,11 +36,8 @@ public class Server {
         javalin.get("/game", this::getGames);
         javalin.post("/game", this::newGame);
         javalin.put("/game", this::joinGame);
-
-
-        //javalin.post("/db", this::dataStuff);
+        javalin.delete("/db", this::deleteDB);
         // Register your endpoints and exception handlers here.
-
     }
 
     private void register(@NotNull Context ctx) throws UserException {
@@ -63,7 +60,7 @@ public class Server {
 
     private void logOut(@NotNull Context ctx){
     var serializer = new Gson();
-    LogoutRequest authToken = serializer.fromJson(ctx.body(), LogoutRequest.class);
+        String authToken = ctx.attribute("authToken");
     try{
         uServe.logOut(authToken);
     }catch(UserException error){
@@ -72,8 +69,15 @@ public class Server {
     }
 
     private void getGames(@NotNull Context ctx){
+        try {
+            String authToken = ctx.attribute("authToken");
+            gServe.getGames(authToken);
+        } catch (UserException e) {
+           System.out.print(e.getMessage());
+        }
 
     }
+
     private void newGame(@NotNull Context ctx){
         try{
         var serializer = new Gson();
@@ -85,16 +89,28 @@ public class Server {
         }
 
     }
-    private void joinGame(@NotNull Context ctx){
 
+
+    // Issues, How do I get the Auth Token from the requests sent?
+
+    private void joinGame(@NotNull Context ctx) {
+        try {
+            var serializer = new Gson();
+            JoinRequest req = serializer.fromJson(ctx.body(), JoinRequest.class);
+            String authToken = ctx.attribute("authToken");
+            gServe.joinGame(authToken, req);
+        }catch (UserException e){
+            System.out.print(e.getMessage());
+        }
     }
 
-    /* I've Set the Delete Fungtion up this way so that in the future
-    If I want to add more methods that work on the database, I can.*/
-//    private void dataStuff(@NotNull Context ctx){
-//        var serializer = new Gson();
-//        DataInstruction data =
-//    }
+
+
+    private void deleteDB(@NotNull Context ctx){
+        uServe.clear();
+        gServe.clear();
+        aServe.clear();
+   }
 
     public int run(int desiredPort) {
         javalin.start(desiredPort);

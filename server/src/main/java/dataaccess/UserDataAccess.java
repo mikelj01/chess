@@ -13,4 +13,6 @@ public interface UserDataAccess {
 
     UserData addUser(UserData user) throws DataAccessException;
 
+    void clear();
+
 }

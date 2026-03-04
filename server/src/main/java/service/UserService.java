@@ -52,11 +52,14 @@ public class UserService {
         }
         }
 
-    public void logOut(LogoutRequest authData) throws UserException{
+    public void logOut(String authData) throws UserException{
         try {
-            aServe.deleteAuth(authData.authToken());
+            aServe.deleteAuth(authData);
         } catch (DataAccessException e) {
             throw new UserException("Error logging Out");
         }
+    }
+    public void clear(){
+        userDB.clear();
     }
 }

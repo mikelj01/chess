@@ -20,11 +20,24 @@ public class AuthService {
         }
     }
 
-    public AuthData getAuth(String authToken){
-        return null;
+    public AuthData getAuth(String authToken) throws UserException {
+        try {
+            AuthData auth = authDB.getAuth(authToken);
+            return auth;
+        }catch (DataAccessException e){
+            throw new UserException("You are not authorized");
+        }
     }
 
-    public void deleteAuth(String authToken){
+    public void deleteAuth(String authToken) throws DataAccessException {
+        try {
+            authDB.deleteAuth(authToken);
+        }catch (DataAccessException e){
+            throw new DataAccessException("You are not Logged in");
+        }
+    }
 
+    public void clear(){
+        authDB.clear();
     }
 }
