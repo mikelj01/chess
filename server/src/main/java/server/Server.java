@@ -25,9 +25,10 @@ public class Server {
         this.UserDB = new MemUserDA();
         this.gameDB = new MemGameDA();
         this.authDB = new MemAuthDA();
-        this.uServe = new UserService(UserDB, authDB);
-        this.gServe = new GameService(gameDB);
         this.aServe = new AuthService(authDB);
+        this.uServe = new UserService(UserDB, aServe);
+        this.gServe = new GameService(gameDB, aServe);
+
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
         javalin.post("/user", this::register);
         javalin.post("/session", this::logIn);
@@ -74,6 +75,14 @@ public class Server {
 
     }
     private void newGame(@NotNull Context ctx){
+        try{
+        var serializer = new Gson();
+        String gameName = serializer.fromJson(ctx.body(), String.class);
+        String authToken = ctx.attribute("authToken");
+        model.GameData game = gServe.newGame(gameName, authToken);
+        }catch (UserException e){
+            System.out.print(e.getMessage());
+        }
 
     }
     private void joinGame(@NotNull Context ctx){

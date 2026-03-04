@@ -48,4 +48,12 @@ public class MemGameDA implements GameDataAccess {
             throw new DataAccessException("That game doesn't exist");
         }
     }
+
+    @Override
+    public ArrayList<GameData> listGames() throws DataAccessException {
+        if(games.size()==0){
+            throw new DataAccessException("There are no Games");
+        }
+        return games;
+    }
 }

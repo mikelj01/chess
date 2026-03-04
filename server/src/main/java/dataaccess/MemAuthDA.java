@@ -14,10 +14,15 @@ public class MemAuthDA implements AuthDataAccess{
         this.authDataMap = new HashMap<>();
     }
     @Override
-    public AuthData createAuth(LoginRequest user) throws DataAccessException {
-        AuthData auth = AuthGenerator.genAuth(user.username());
+    public AuthData createAuth(String userName) throws DataAccessException {
+        AuthData auth = AuthGenerator.genAuth(userName);
+        if(!authDataMap.containsKey(auth.authToken())){
         authDataMap.put(auth.authToken(), auth);
         return auth;
+        }
+        else{
+            throw new DataAccessException("That Auth is already Filled");
+        }
     }
 
     @Override

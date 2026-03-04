@@ -11,10 +11,10 @@ import model.UserData;
 
 public class UserService {
     UserDataAccess userDB;
-    AuthDataAccess authDB;
-    public UserService(UserDataAccess userDB, AuthDataAccess authDB){
+    AuthService aServe;
+    public UserService(UserDataAccess userDB, AuthService aServe){
         this.userDB = userDB;
-        this.authDB = authDB;
+        this.aServe = aServe;
     }
 
     public UserData register(UserData user) throws UserException{
@@ -28,7 +28,7 @@ public class UserService {
             try{
                 userDB.addUser(user);
                 LoginRequest userSesh = new LoginRequest(user.username(), user.password());
-                authDB.createAuth(userSesh);
+                aServe.createAuth(userSesh.username());
                 return user;
             } catch (DataAccessException realError){
                 throw new UserException("Error accesing the DataBase");
@@ -45,7 +45,7 @@ public class UserService {
             else if(existUser.password() != user.password()){
                 throw new UserException("Incorrect Password");
             }
-            AuthData userAuth = authDB.createAuth(user);
+            AuthData userAuth = aServe.createAuth(user.username());
             return userAuth;
         }catch (DataAccessException error){
             throw new UserException(error.getMessage());
@@ -54,7 +54,7 @@ public class UserService {
 
     public void logOut(LogoutRequest authData) throws UserException{
         try {
-            authDB.deleteAuth(authData.authToken());
+            aServe.deleteAuth(authData.authToken());
         } catch (DataAccessException e) {
             throw new UserException("Error logging Out");
         }
