@@ -37,11 +37,11 @@ public class AuthService {
         }
     }
 
-    public void clear(){
+    public void clear() throws DataAccessException {
         try {
             authDB.clear();
         } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e.getMessage());
         }
     }
 }

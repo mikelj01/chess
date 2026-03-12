@@ -4,6 +4,7 @@ import model.AuthData;
 import model.GameData;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MemGameDA implements GameDataAccess {
 
@@ -15,11 +16,11 @@ public class MemGameDA implements GameDataAccess {
 
     @Override
     public void deleteGame(int gameID) throws DataAccessException {
-    games.remove(gameID-1);
+    games.remove(gameID);
     }
 
     @Override
-    public GameData crateGame(GameData game) throws DataAccessException {
+    public GameData createGame(GameData game) throws DataAccessException {
         games.add(game);
         return game;
     }
@@ -27,21 +28,21 @@ public class MemGameDA implements GameDataAccess {
     @Override
     public GameData joinGame(String color, int gameID, AuthData auth) throws DataAccessException {
         try{
-            if(color == "White"){
-            GameData game = games.get(gameID-1);
+            if(Objects.equals(color, "WHITE")){
+            GameData game = games.get(gameID);
             if(game.whiteUsername() != null){
                 throw new DataAccessException("That seat is already taken");
             }
             GameData newGame = new GameData(game.gameID(), auth.username(), game.blackUsername(), game.gameName(), game.game());
-            games.set(gameID-1, newGame);
+            games.set(gameID, newGame);
             return newGame;
         }
-            GameData game = games.get(gameID-1);
+            GameData game = games.get(gameID);
             if(game.blackUsername() != null){
                 throw new DataAccessException("That seat is already taken");
             }
             GameData newGame = new GameData(game.gameID(), game.whiteUsername(), auth.username(), game.gameName(), game.game());
-            games.set(gameID-1, newGame);
+            games.set(gameID, newGame);
             return newGame;
         }catch(IndexOutOfBoundsException e){
             throw new DataAccessException("That game doesn't exist");

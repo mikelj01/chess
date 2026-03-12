@@ -14,17 +14,6 @@ public class UserService {
     }
 
     public LoginResult register(UserData user) throws DataAccessException {
-//        try {
-//            UserData existUser = userDB.getUser(user.username());
-//            if(existUser != null){
-//                throw new UserException("That User Already Exists");
-//            }
-//        }catch (UserException error){
-//            throw new UserException(error.getMessage());
-//        } catch (DataAccessException e) {
-//            throw new DataAccessException(e.getMessage());
-//        }
-
         try{
             userDB.addUser(user);
             LoginRequest userSesh = new LoginRequest(user.username(), user.password());
@@ -40,6 +29,9 @@ public class UserService {
     public AuthData login(LoginRequest user, String authToken) throws DataAccessException {
         try {
             if(aServe.getAuth(authToken) != null ){
+                throw new AuthException("Error: bad request");
+            }
+            if(user.username() == null){
                 throw new UserException("Error: bad request");
             }
             UserData existUser = userDB.getUser(user.username());
@@ -47,7 +39,7 @@ public class UserService {
                 throw new UserException("There is no account with that username");
             }
             else if(!existUser.password().equals(user.password())){
-                throw new UserException("Incorrect Password");
+                throw new UserException("Error: Incorrect Password");
             }
             AuthData userAuth = aServe.createAuth(user.username());
             return userAuth;
@@ -72,11 +64,11 @@ public class UserService {
         }
     }
 
-    public void clear(){
+    public void clear() throws DataAccessException {
         try {
             userDB.clear();
         } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e.getMessage());
         }
     }
 }

@@ -1,7 +1,7 @@
 package model;
 
 public record JoinRequest(
-        String Color,
+        String playerColor,
         int gameID
 ) {
 }

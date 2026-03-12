@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.UserData;
+import service.AuthException;
 import service.UserException;
 
 import java.util.HashMap;
@@ -35,6 +36,9 @@ public class MemUserDA implements UserDataAccess{
         String userName = user.username();
         if(userDataMap.get(userName) != null){
             throw new UserException("That username is taken");
+        }
+        if(user.password() == null){
+            throw new AuthException(" bad Request");
         }
         userDataMap.put(userName, user);
         return userDataMap.get(userName);
