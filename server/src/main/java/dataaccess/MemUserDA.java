@@ -34,13 +34,18 @@ public class MemUserDA implements UserDataAccess{
     public UserData addUser(UserData user) throws DataAccessException {
         String userName = user.username();
         if(userDataMap.get(userName) != null){
-            throw new DataAccessException("That username is taken");
+            throw new UserException("That username is taken");
         }
         userDataMap.put(userName, user);
         return userDataMap.get(userName);
     }
 
-    public void clear(){
+    public void clear() throws DataAccessException {
+        try{
         userDataMap.clear();
+        } catch (Exception e) {
+            throw new DataAccessException("error accesing Database");
+        }
+
     }
 }

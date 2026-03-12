@@ -1,6 +1,5 @@
 package dataaccess;
 
-import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
 
@@ -57,7 +56,11 @@ public class MemGameDA implements GameDataAccess {
         return games;
     }
 
-    public void clear(){
-        games.clear();
+    public void clear() throws DataAccessException {
+        try {
+            games.clear();
+        }catch(Exception e){
+            throw new DataAccessException("THere was an error accessing the Database.");
+        }
     }
 }

@@ -20,12 +20,12 @@ public class AuthService {
         }
     }
 
-    public AuthData getAuth(String authToken) throws UserException {
+    public AuthData getAuth(String authToken) throws UserException, AuthException {
         try {
             AuthData auth = authDB.getAuth(authToken);
             return auth;
         }catch (DataAccessException e){
-            throw new UserException("You are not authorized");
+            throw new AuthException("Error: Unauthorized");
         }
     }
 
@@ -33,11 +33,15 @@ public class AuthService {
         try {
             authDB.deleteAuth(authToken);
         }catch (DataAccessException e){
-            throw new DataAccessException("You are not Logged in");
+            throw new AuthException("You are not Logged in");
         }
     }
 
     public void clear(){
-        authDB.clear();
+        try {
+            authDB.clear();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

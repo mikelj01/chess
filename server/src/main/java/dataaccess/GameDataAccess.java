@@ -14,5 +14,5 @@ public interface GameDataAccess {
 
     ArrayList<GameData> listGames() throws DataAccessException;
 
-    void clear();
+    void clear() throws DataAccessException;
 }

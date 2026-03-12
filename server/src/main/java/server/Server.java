@@ -6,10 +6,9 @@ import io.javalin.*;
 import io.javalin.http.Context;
 import model.*;
 import org.jetbrains.annotations.NotNull;
-import service.AuthService;
-import service.GameService;
-import service.UserException;
-import service.UserService;
+import service.*;
+
+import java.util.Map;
 
 
 public class Server {
@@ -41,39 +40,70 @@ public class Server {
     }
 
     private void register(@NotNull Context ctx) throws UserException {
-        var serializer = new Gson();
-        UserData user = serializer.fromJson(ctx.body(), UserData.class);
-        user = uServe.register(user);
-        ctx.result(new Gson().toJson(user));
+        try {
+            var serializer = new Gson();
+            UserData user = serializer.fromJson(ctx.body(), UserData.class);
+            LoginResult result;
+            result = uServe.register(user);
+            ctx.result(new Gson().toJson(result));
+        }catch(UserException e){
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+            ctx.status(403);
+        }catch (DataAccessException e){
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+        }
     }
 
     private void logIn(@NotNull Context ctx){
         try{
         var serializer = new Gson();
         LoginRequest user = serializer.fromJson(ctx.body(), LoginRequest.class);
-        AuthData auth = uServe.login(user);
-
-        }catch (UserException ex){
-            System.out.print(ex);
+        String authToken = ctx.header("authorization");
+        AuthData auth = uServe.login(user, authToken);
+            ctx.result(new Gson().toJson(auth));
+        }catch (UserException e){
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+            ctx.status(400);
+        }catch(AuthException e){
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+            ctx.status(401);
+        }catch(DataAccessException e){
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+            ctx.status(500);
         }
     }
 
     private void logOut(@NotNull Context ctx){
     var serializer = new Gson();
-        String authToken = ctx.attribute("authToken");
+        String authToken = ctx.header("authorization");
     try{
         uServe.logOut(authToken);
-    }catch(UserException error){
+    }catch (UserException e){
+        ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+        ctx.status(400);
+    }catch(AuthException e){
+        ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+        ctx.status(401);
+    }catch(DataAccessException e){
+        ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+        ctx.status(500);
     }
 
     }
 
     private void getGames(@NotNull Context ctx){
         try {
-            String authToken = ctx.attribute("authToken");
+            String authToken = ctx.header("authorization");
             gServe.getGames(authToken);
-        } catch (UserException e) {
-           System.out.print(e.getMessage());
+        }catch (UserException e){
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+            ctx.status(400);
+        }catch(AuthException e){
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+            ctx.status(401);
+        }catch(DataAccessException e){
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+            ctx.status(500);
         }
 
     }
@@ -82,14 +112,20 @@ public class Server {
         try{
         var serializer = new Gson();
         String gameName = serializer.fromJson(ctx.body(), String.class);
-        String authToken = ctx.attribute("authToken");
+        String authToken = ctx.header("authorization");
         model.GameData game = gServe.newGame(gameName, authToken);
         }catch (UserException e){
-            System.out.print(e.getMessage());
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+            ctx.status(400);
+        }catch(AuthException e){
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+            ctx.status(401);
+        }catch(DataAccessException e){
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+            ctx.status(500);
         }
 
     }
-
 
     // Issues, How do I get the Auth Token from the requests sent?
 
@@ -97,19 +133,22 @@ public class Server {
         try {
             var serializer = new Gson();
             JoinRequest req = serializer.fromJson(ctx.body(), JoinRequest.class);
-            String authToken = ctx.attribute("authToken");
+            String authToken = ctx.header("authorization");
             gServe.joinGame(authToken, req);
         }catch (UserException e){
             System.out.print(e.getMessage());
         }
     }
 
-
-
     private void deleteDB(@NotNull Context ctx){
-        uServe.clear();
-        gServe.clear();
-        aServe.clear();
+        try {
+            uServe.clear();
+            gServe.clear();
+            aServe.clear();
+        }catch(DataAccessException e){
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+            ctx.status(500);
+        }
    }
 
     public int run(int desiredPort) {

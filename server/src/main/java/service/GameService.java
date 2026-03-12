@@ -19,19 +19,21 @@ public class GameService {
         this.aServe = aServe;
     }
 
-    public GameData newGame (String gameName, String authToken)throws UserException{
-        if(aServe.getAuth(authToken)== null){
+    public GameData newGame (String gameName, String authToken) throws UserException, AuthException {
+        if (aServe.getAuth(authToken) == null) {
             throw new UserException("Not authorized");
         }
-        try{
+        try {
             ArrayList<GameData> games = gameDB.listGames();
-            for(GameData game: games){
-                if(game.gameName() == gameName){
-                    throw  new UserException("That Game Name is Taken");
+            for (GameData game : games) {
+                if (game.gameName() == gameName) {
+                    throw new UserException("That Game Name is Taken");
                 }
             }
-            GameData newGame = new GameData(games.size(),null, null, gameName, new ChessGame());
+            GameData newGame = new GameData(games.size(), null, null, gameName, new ChessGame());
             gameDB.crateGame(newGame);
+        }catch(AuthException e){
+            throw new AuthException(e.getMessage());
         }catch(DataAccessException e){
             throw new UserException("There was an error accessing the Data (In GameService");
         }
@@ -50,11 +52,13 @@ public class GameService {
 
     }
 
-    public ArrayList<GameData> getGames(String authToken) throws UserException {
+    public ArrayList<GameData> getGames(String authToken) throws UserException, AuthException {
         try {
             aServe.getAuth(authToken);
         } catch (UserException e) {
             throw new UserException("You are not Authorized");
+        } catch (AuthException e) {
+            throw new AuthException(e.getMessage());
         }
         try {
             ArrayList<GameData> games = gameDB.listGames();
@@ -65,6 +69,10 @@ public class GameService {
     }
 
     public void clear(){
-        gameDB.clear();
+        try {
+            gameDB.clear();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

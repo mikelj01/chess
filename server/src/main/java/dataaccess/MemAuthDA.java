@@ -1,8 +1,6 @@
 package dataaccess;
 
 import model.AuthData;
-import model.LoginRequest;
-import model.UserData;
 import server.websocket.AuthGenerator;
 
 import java.util.HashMap;
@@ -36,7 +34,12 @@ public class MemAuthDA implements AuthDataAccess{
         return authDataMap.get(authToken);
     }
 
-    public void clear(){
-        authDataMap.clear();
+    public void clear() throws DataAccessException {
+
+        try {
+            authDataMap.clear();
+        }catch (Exception e){
+            throw new DataAccessException("There was an error Accessing the Database");
+        }
     }
 }
