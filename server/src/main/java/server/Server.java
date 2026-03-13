@@ -174,11 +174,13 @@ public class Server {
 
     private void deleteDB(@NotNull Context ctx){
         try {
-            gServe.deleteGame(1);
-            uServe.deleteUser("beans");
+
             uServe.clear();
             gServe.clear();
             aServe.clear();
+        }catch (UserException e){
+            gServe.deleteGame(1);
+            uServe.deleteUser("beans");
         }catch(DataAccessException e){
             ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
             ctx.status(500);
