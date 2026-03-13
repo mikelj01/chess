@@ -64,6 +64,14 @@ public class UserService {
         }
     }
 
+    public void deleteUser(String username) {
+        try {
+            userDB.deleteUser(username);
+        } catch (DataAccessException e) {
+            System.out.print("beans");
+        }
+    }
+
     public void clear() throws DataAccessException {
         try {
             userDB.clear();

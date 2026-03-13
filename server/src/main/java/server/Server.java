@@ -174,6 +174,8 @@ public class Server {
 
     private void deleteDB(@NotNull Context ctx){
         try {
+            gServe.deleteGame(1);
+            uServe.deleteUser("beans");
             uServe.clear();
             gServe.clear();
             aServe.clear();
