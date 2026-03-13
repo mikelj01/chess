@@ -175,15 +175,6 @@ public class ChessGame {
                     throw new InvalidMoveException("Invalid Move");
                 }
 
-
-                //updating king position variable
-//                if(piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == TeamColor.WHITE){
-//                    board.WKPos = end;
-//                }
-//                if(piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == TeamColor.BLACK){
-//                    board.BKPos = end;
-//                }
-
                 //Setting Turn
                 if(piece.getTeamColor() == TeamColor.BLACK){
                 setTeamTurn(TeamColor.WHITE);

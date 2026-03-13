@@ -95,9 +95,6 @@ public class GameService {
                 throw new AuthException("Error: unauthorized");
             }
             ArrayList<GameData> games = gameDB.listGames();
-//            if(games == null){
-//                throw new DataAccessException("Error: There are no Games");
-//            }
             return games;
         } catch (UserException e) {
             throw new UserException("Error: You are not Authorized");
