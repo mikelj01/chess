@@ -10,13 +10,12 @@ public class AuthService {
         this.authDB = authDB;
     }
 
-
     public AuthData createAuth(String username) throws UserException{
         try{
             AuthData auth = authDB.createAuth(username);
             return auth;
         } catch (DataAccessException e) {
-            throw new UserException("You are Already Logged in");
+            throw new UserException("Error: You are Already Logged in");
         }
     }
 

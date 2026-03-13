@@ -4,7 +4,6 @@ import dataaccess.UserDataAccess;
 import dataaccess.DataAccessException;
 import model.*;
 
-
 public class UserService {
     UserDataAccess userDB;
     AuthService aServe;
@@ -19,7 +18,6 @@ public class UserService {
            LoginRequest userSesh = new LoginRequest(user.username(), user.password());
            AuthData auth = aServe.createAuth(userSesh.username());
             LoginResult result = new LoginResult(auth.username(), auth.authToken());
-            //aServe.deleteAuth(auth.authToken());
             return result;
         } catch (UserException e){
             throw new UserException(e.getMessage());

@@ -39,7 +39,7 @@ public class GameService {
             }
             for (GameData game : games) {
                 if (Objects.equals(game.gameName(), gameName)) {
-                    throw new UserException("That Game Name is Taken");
+                    throw new UserException("Error: That Game Name is Taken");
                 }
             }
             GameData newGame = new GameData(games.size()+1, null, null, gameName, new ChessGame());
@@ -49,7 +49,7 @@ public class GameService {
             throw new AuthException(e.getMessage());
         }catch(DataAccessException e){
             try {
-                if (e.getMessage() == "There are no Games") {
+                if (e.getMessage() == "Error: There are no Games") {
                     GameData newGame = new GameData(1, null, null, gameName, new ChessGame());
                     gameDB.createGame(newGame);
                 }
@@ -92,7 +92,7 @@ public class GameService {
         try {
             AuthData auth = aServe.getAuth(authToken);
             if(auth == null){
-                throw new AuthException(" unauthorized");
+                throw new AuthException("Error: unauthorized");
             }
             ArrayList<GameData> games = gameDB.listGames();
 //            if(games == null){
@@ -100,7 +100,7 @@ public class GameService {
 //            }
             return games;
         } catch (UserException e) {
-            throw new UserException("You are not Authorized");
+            throw new UserException("Error: You are not Authorized");
         } catch (AuthException e) {
             throw new AuthException(e.getMessage());
         }catch (DataAccessException e) {
