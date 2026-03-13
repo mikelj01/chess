@@ -49,13 +49,13 @@ public class Server {
             result = uServe.register(user);
             ctx.result(new Gson().toJson(result));
         }catch(AuthException e){
-            ctx.result(new Gson().toJson(Map.of("Error:",e.getMessage())));
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
             ctx.status(400);
         }catch(UserException e){
-            ctx.result(new Gson().toJson(Map.of("Error:",e.getMessage())));
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
             ctx.status(403);
         } catch (DataAccessException e){
-            ctx.result(new Gson().toJson(Map.of("Error:",e.getMessage())));
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
             ctx.status(500);
         }
     }
@@ -66,15 +66,15 @@ public class Server {
         LoginRequest user = serializer.fromJson(ctx.body(), LoginRequest.class);
         String authToken = ctx.header("authorization");
         AuthData auth = uServe.login(user, authToken);
-            ctx.result(new Gson().toJson(auth));
+        ctx.result(new Gson().toJson(auth));
         }catch (UserException e){
-            ctx.result(new Gson().toJson(Map.of("Error:",e.getMessage())));
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
             ctx.status(400);
         }catch(AuthException e){
-            ctx.result(new Gson().toJson(Map.of("Error:",e.getMessage())));
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
             ctx.status(401);
         }catch(DataAccessException e){
-            ctx.result(new Gson().toJson(Map.of("Error:",e.getMessage())));
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
             ctx.status(500);
         }
     }
@@ -85,13 +85,13 @@ public class Server {
     try{
         uServe.logOut(authToken);
     }catch (UserException e){
-        ctx.result(new Gson().toJson(Map.of("Error:",e.getMessage())));
+        ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
         ctx.status(400);
     }catch(AuthException e){
-        ctx.result(new Gson().toJson(Map.of("Error:",e.getMessage())));
+        ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
         ctx.status(401);
     }catch(DataAccessException e){
-        ctx.result(new Gson().toJson(Map.of("Error:",e.getMessage())));
+        ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
         ctx.status(500);
     }
 
@@ -101,19 +101,26 @@ public class Server {
         try {
             String authToken = ctx.header("authorization");
             ArrayList<GameData> games = gServe.getGames(authToken);
-            ArrayList<GameResult> gResults = new ArrayList<>();
-            for(GameData game : games){
-                gResults.add(new GameResult(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName()));
+            if(games!=null) {
+                ArrayList<GameResult> gResults = new ArrayList<>();
+                for (GameData game : games) {
+                    gResults.add(new GameResult(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName()));
+                }
+                GameList gamez = new GameList(gResults);
+                ctx.result(new Gson().toJson(gamez));
             }
-            ctx.result(new Gson().toJson(gResults));
+            else {
+                ctx.result("{}");
+            }
+            ctx.status(200);
         }catch (UserException e){
-            ctx.result(new Gson().toJson(Map.of("Error:",e.getMessage())));
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
             ctx.status(400);
         }catch(AuthException e){
-            ctx.result(new Gson().toJson(Map.of("Error:",e.getMessage())));
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
             ctx.status(401);
         }catch(DataAccessException e){
-            ctx.result(new Gson().toJson(Map.of("Error:",e.getMessage())));
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
             ctx.status(500);
         }
 
@@ -125,14 +132,17 @@ public class Server {
         CreateGameRequest newGAme = serializer.fromJson(ctx.body(), CreateGameRequest.class);
         String authToken = ctx.header("authorization");
         model.GameData game = gServe.newGame(newGAme.gameName(), authToken);
+        NewGameResult result = new NewGameResult(game.gameID());
+        ctx.result(new Gson().toJson(result));
+        ctx.status(200);
         }catch (UserException e){
-            ctx.result(new Gson().toJson(Map.of("Error:",e.getMessage())));
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
             ctx.status(400);
         }catch(AuthException e){
-            ctx.result(new Gson().toJson(Map.of("Error:",e.getMessage())));
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
             ctx.status(401);
         }catch(DataAccessException e){
-            ctx.result(new Gson().toJson(Map.of("Error:",e.getMessage())));
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
             ctx.status(500);
         }
 
@@ -144,9 +154,21 @@ public class Server {
             JoinRequest req = serializer.fromJson(ctx.body(), JoinRequest.class);
             String authToken = ctx.header("authorization");
             gServe.joinGame(authToken, req);
+            ctx.result("{}");
+            ctx.status(200);
         }catch (UserException e){
-            ctx.result(new Gson().toJson(Map.of("Error:",e.getMessage())));
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
             ctx.status(400);
+        } catch (AuthException e){
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+            ctx.status(401);
+        }catch (JoinException e){
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+            ctx.status(403);
+        }
+        catch (Exception e) {
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
+            ctx.status(500);
         }
     }
 
@@ -156,7 +178,7 @@ public class Server {
             gServe.clear();
             aServe.clear();
         }catch(DataAccessException e){
-            ctx.result(new Gson().toJson(Map.of("Error:",e.getMessage())));
+            ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
             ctx.status(500);
         }
    }

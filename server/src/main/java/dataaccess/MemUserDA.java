@@ -15,9 +15,6 @@ public class MemUserDA implements UserDataAccess{
 
     @Override
     public UserData getUser(String userName) throws DataAccessException {
-        if(userDataMap.get(userName) == null){
-            throw new DataAccessException("That user doesn't exist");
-        }
         return userDataMap.get(userName);
     }
 
@@ -27,7 +24,7 @@ public class MemUserDA implements UserDataAccess{
         userDataMap.remove(userName);
     }
     else{
-        throw new DataAccessException("That Username Doesn't exist.");
+        throw new AuthException("Error: Unauthorized");
     }
     }
 
@@ -35,10 +32,10 @@ public class MemUserDA implements UserDataAccess{
     public UserData addUser(UserData user) throws DataAccessException {
         String userName = user.username();
         if(userDataMap.get(userName) != null){
-            throw new UserException("That username is taken");
+            throw new UserException("Error: That username is taken");
         }
         if(user.password() == null){
-            throw new AuthException(" bad Request");
+            throw new AuthException("Error: bad Request");
         }
         userDataMap.put(userName, user);
         return userDataMap.get(userName);
@@ -48,7 +45,7 @@ public class MemUserDA implements UserDataAccess{
         try{
         userDataMap.clear();
         } catch (Exception e) {
-            throw new DataAccessException("error accesing Database");
+            throw new DataAccessException("Error: error accesing Database");
         }
 
     }

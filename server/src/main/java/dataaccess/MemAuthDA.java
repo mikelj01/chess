@@ -16,7 +16,7 @@ public class MemAuthDA implements AuthDataAccess{
     @Override
     public AuthData createAuth(String userName) throws DataAccessException {
         if(userName == null){
-            throw new AuthException(" Bad request");
+            throw new AuthException("Error: Bad request");
         }
         AuthData auth = AuthGenerator.genAuth(userName);
         if(!authDataMap.containsKey(auth.authToken())){
@@ -24,14 +24,14 @@ public class MemAuthDA implements AuthDataAccess{
         return auth;
         }
         else{
-            throw new DataAccessException(" That Auth is already Filled");
+            throw new DataAccessException("Error: That Auth is already Filled");
         }
     }
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
         if(!authDataMap.containsKey(authToken)){
-            throw new AuthException(" Unauthorized");
+            throw new AuthException("Error: Unauthorized");
         }
     authDataMap.remove(authToken);
     }
@@ -39,7 +39,7 @@ public class MemAuthDA implements AuthDataAccess{
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
         if(authToken == null){
-            throw new AuthException(" Not Authorized");
+            throw new AuthException("Error: Not Authorized");
         }
         return authDataMap.get(authToken);
 
@@ -50,7 +50,7 @@ public class MemAuthDA implements AuthDataAccess{
         try {
             authDataMap.clear();
         }catch (Exception e){
-            throw new DataAccessException("There was an error Accessing the Database");
+            throw new DataAccessException("Error: There was an error Accessing the Database");
         }
     }
 }

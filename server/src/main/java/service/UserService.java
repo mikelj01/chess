@@ -16,9 +16,10 @@ public class UserService {
     public LoginResult register(UserData user) throws DataAccessException {
         try{
             userDB.addUser(user);
-            LoginRequest userSesh = new LoginRequest(user.username(), user.password());
-            AuthData auth = aServe.createAuth(userSesh.username());
+           LoginRequest userSesh = new LoginRequest(user.username(), user.password());
+           AuthData auth = aServe.createAuth(userSesh.username());
             LoginResult result = new LoginResult(auth.username(), auth.authToken());
+            //aServe.deleteAuth(auth.authToken());
             return result;
         } catch (UserException e){
             throw new UserException(e.getMessage());
@@ -27,19 +28,20 @@ public class UserService {
     }
 
     public AuthData login(LoginRequest user, String authToken) throws DataAccessException {
+        if(aServe.getAuth(authToken) != null ){
+            throw new AuthException("Error: bad request");
+        }
+        if(user.username() == null){
+            throw new UserException("Error: bad request");
+        }
         try {
-            if(aServe.getAuth(authToken) != null ){
-                throw new AuthException("Error: bad request");
-            }
-            if(user.username() == null){
-                throw new UserException("Error: bad request");
-            }
             UserData existUser = userDB.getUser(user.username());
             if(existUser == null){
-                throw new UserException("There is no account with that username");
-            }
-            else if(!existUser.password().equals(user.password())){
-                throw new UserException("Error: Incorrect Password");
+                throw new AuthException("Error: There is no account with that username");
+            } else if (user.password()==null) {
+                throw new UserException("Error: bad Request");
+            } else if(!existUser.password().equals(user.password())){
+                throw new AuthException("Error: Incorrect Password");
             }
             AuthData userAuth = aServe.createAuth(user.username());
             return userAuth;

@@ -2,6 +2,8 @@ package dataaccess;
 
 import model.AuthData;
 import model.GameData;
+import service.JoinException;
+import service.UserException;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -27,33 +29,34 @@ public class MemGameDA implements GameDataAccess {
 
     @Override
     public GameData joinGame(String color, int gameID, AuthData auth) throws DataAccessException {
+
         try{
             if(Objects.equals(color, "WHITE")){
-            GameData game = games.get(gameID);
+            GameData game = games.get(gameID-1);
             if(game.whiteUsername() != null){
-                throw new DataAccessException("That seat is already taken");
+                throw new JoinException("Error: That seat is already taken");
             }
             GameData newGame = new GameData(game.gameID(), auth.username(), game.blackUsername(), game.gameName(), game.game());
-            games.set(gameID, newGame);
+            games.set(gameID-1, newGame);
             return newGame;
-        }
-            GameData game = games.get(gameID);
-            if(game.blackUsername() != null){
-                throw new DataAccessException("That seat is already taken");
             }
-            GameData newGame = new GameData(game.gameID(), game.whiteUsername(), auth.username(), game.gameName(), game.game());
-            games.set(gameID, newGame);
-            return newGame;
+            if(Objects.equals(color, "BLACK")){
+                GameData game = games.get(gameID-1);
+                if(game.blackUsername() != null){
+                    throw new JoinException("Error: That seat is already taken");
+                }
+                GameData newGame = new GameData(game.gameID(),game.whiteUsername(), auth.username() , game.gameName(), game.game());
+                games.set(gameID-1, newGame);
+                return newGame;
+            }
+            throw new UserException("Error: Bad Request");
         }catch(IndexOutOfBoundsException e){
-            throw new DataAccessException("That game doesn't exist");
+            throw new DataAccessException("Error: That game doesn't exist");
         }
     }
 
     @Override
     public ArrayList<GameData> listGames() throws DataAccessException {
-        if(games.size()==0){
-            throw new DataAccessException("There are no Games");
-        }
         return games;
     }
 
@@ -61,7 +64,7 @@ public class MemGameDA implements GameDataAccess {
         try {
             games.clear();
         }catch(Exception e){
-            throw new DataAccessException("THere was an error accessing the Database.");
+            throw new DataAccessException("Error: There was an error accessing the Database.");
         }
     }
 }

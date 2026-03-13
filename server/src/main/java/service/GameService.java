@@ -1,6 +1,7 @@
 package service;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.GameDataAccess;
 import model.AuthData;
@@ -9,6 +10,7 @@ import model.JoinRequest;
 
 import javax.xml.crypto.Data;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 
 public class GameService {
@@ -23,23 +25,32 @@ public class GameService {
 
     public GameData newGame (String gameName, String authToken) throws UserException, AuthException {
         if (aServe.getAuth(authToken) == null) {
-            throw new AuthException("Not authorized");
+            throw new AuthException("Error: Not authorized");
+        }
+        if(gameName == null){
+            throw new UserException("Error: Bad Request");
         }
         try {
             ArrayList<GameData> games = gameDB.listGames();
+            if(games == null){
+                GameData newGame = new GameData(1, null, null, gameName, new ChessGame());
+                gameDB.createGame(newGame);
+                return newGame;
+            }
             for (GameData game : games) {
                 if (Objects.equals(game.gameName(), gameName)) {
                     throw new UserException("That Game Name is Taken");
                 }
             }
-            GameData newGame = new GameData(games.size(), null, null, gameName, new ChessGame());
+            GameData newGame = new GameData(games.size()+1, null, null, gameName, new ChessGame());
             gameDB.createGame(newGame);
+            return newGame;
         }catch(AuthException e){
             throw new AuthException(e.getMessage());
         }catch(DataAccessException e){
             try {
                 if (e.getMessage() == "There are no Games") {
-                    GameData newGame = new GameData(0, null, null, gameName, new ChessGame());
+                    GameData newGame = new GameData(1, null, null, gameName, new ChessGame());
                     gameDB.createGame(newGame);
                 }
                 else{
@@ -54,14 +65,25 @@ public class GameService {
         return null;
     }
 
-    public GameData joinGame(String authToken, JoinRequest req) throws UserException {
+    public GameData joinGame(String authToken, JoinRequest req) throws UserException, AuthException, JoinException {
         try{
             AuthData auth = aServe.getAuth(authToken);
+            if(auth == null){
+                throw new AuthException("Error: Unauthorized");
+            }
+            if(req.playerColor() == null){
+                throw new UserException("Error: bad request");
+            }
             return gameDB.joinGame(req.playerColor().toUpperCase(), req.gameID(), auth);
         }catch(UserException e){
-            throw new UserException("You are not logged in.");
-        } catch (DataAccessException e) {
-            throw new UserException("That Game Doesn't Exist");
+            throw new UserException("Error: You are not logged in.");
+        } catch (AuthException e){
+            throw new AuthException(e.getMessage());
+        }catch(JoinException e){
+            throw new JoinException(e.getMessage());
+        }
+        catch (DataAccessException e) {
+            throw new UserException(e.getMessage());
         }
 
     }
@@ -73,6 +95,9 @@ public class GameService {
                 throw new AuthException(" unauthorized");
             }
             ArrayList<GameData> games = gameDB.listGames();
+//            if(games == null){
+//                throw new DataAccessException("Error: There are no Games");
+//            }
             return games;
         } catch (UserException e) {
             throw new UserException("You are not Authorized");

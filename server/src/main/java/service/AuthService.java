@@ -22,6 +22,9 @@ public class AuthService {
 
     public AuthData getAuth(String authToken) throws UserException, AuthException {
         try {
+            if(authToken == null){
+                return null;
+            }
             AuthData auth = authDB.getAuth(authToken);
             return auth;
         }catch (DataAccessException e){
@@ -33,7 +36,7 @@ public class AuthService {
         try {
             authDB.deleteAuth(authToken);
         }catch (DataAccessException e){
-            throw new AuthException("You are not Logged in");
+            throw new AuthException("Error: You are not Logged in");
         }
     }
 
