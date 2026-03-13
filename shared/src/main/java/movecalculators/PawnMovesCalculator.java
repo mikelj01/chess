@@ -102,7 +102,8 @@ public class PawnMovesCalculator {
                     moves.add(newMove);
                     col1 = col;
                 }
-                if(piece1 != null && piece1.getTeamColor() == ChessGame.TeamColor.BLACK){
+                ChessPiece piece6 = board.getPiece(new ChessPosition(row1, col1 - 1));
+                if(piece6!= null && piece6.getTeamColor() == ChessGame.TeamColor.BLACK){
                     col1--;
                     ChessPosition newPos = new ChessPosition(row1, col1);
                     ChessMove newMove = new ChessMove(startPosition, newPos, null);
