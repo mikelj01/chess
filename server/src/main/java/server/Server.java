@@ -14,7 +14,7 @@ import java.util.Map;
 
 
 public class Server {
-    UserDataAccess UserDB;
+    UserDataAccess userDB;
     UserService uServe;
     GameDataAccess gameDB;
     GameService gServe;
@@ -23,11 +23,11 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
-        this.UserDB = new MemUserDA();
+        this.userDB = new MemUserDA();
         this.gameDB = new MemGameDA();
         this.authDB = new MemAuthDA();
         this.aServe = new AuthService(authDB);
-        this.uServe = new UserService(UserDB, aServe);
+        this.uServe = new UserService(userDB, aServe);
         this.gServe = new GameService(gameDB, aServe);
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));

@@ -198,7 +198,10 @@ public class KnightMovesCalculator {
             return false;
         }
         KnightMovesCalculator that = (KnightMovesCalculator) o;
-        return row == that.row && col == that.col && Objects.equals(board, that.board) && Objects.equals(startPosition, that.startPosition) && color == that.color;
+        if(row == that.row && col == that.col && Objects.equals(board, that.board)) {
+            return Objects.equals(startPosition, that.startPosition) && color == that.color;
+        }
+        return false;
     }
 
     @Override
