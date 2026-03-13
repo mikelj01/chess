@@ -1,17 +1,15 @@
-package MoveCalculators;
+package movecalculators;
 
 import chess.*;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Objects;
-
 
 
 public class PawnMovesCalculator {
     protected final ChessBoard board;
     protected final ChessPosition startPosition;
-    protected final ChessGame.TeamColor Color;
+    protected final ChessGame.TeamColor color;
     private final int row;
     private final int col;
     private final boolean moved;
@@ -21,13 +19,13 @@ public class PawnMovesCalculator {
     public PawnMovesCalculator(ChessBoard board, ChessPosition startPosition){
         this.board = board;
         this.startPosition = startPosition;
-        this.Color = board.getPiece(startPosition).getTeamColor();
+        this.color = board.getPiece(startPosition).getTeamColor();
         this.row = startPosition.getRow();
         this.col = startPosition.getColumn();
-        if (Color == ChessGame.TeamColor.WHITE){
+        if (color == ChessGame.TeamColor.WHITE){
             this.moved = row != 2;
         }
-        else if (Color == ChessGame.TeamColor.BLACK){
+        else if (color == ChessGame.TeamColor.BLACK){
             this.moved = row != 7;
         }
         else{
@@ -42,7 +40,7 @@ public class PawnMovesCalculator {
 
         /* Initial Move Logic*/
         if(!moved){
-            if(Color == ChessGame.TeamColor.WHITE) {
+            if(color == ChessGame.TeamColor.WHITE) {
                 row1++;
                 ChessPosition newPos1 = new ChessPosition(row1, col1);
                 ChessPosition newPos = new ChessPosition(row1, col1);
@@ -74,14 +72,14 @@ public class PawnMovesCalculator {
         col1 = col;
         /*Normal Move Logic*/
         if(row1 < 7 && row1 > 2){
-            if(Color == ChessGame.TeamColor.WHITE && board.getPiece(new ChessPosition(row1 + 1, col1)) == null){
+            if(color == ChessGame.TeamColor.WHITE && board.getPiece(new ChessPosition(row1 + 1, col1)) == null){
                 row1++;
                 ChessPosition newPos = new ChessPosition(row1, col1);
                 moves.add(new ChessMove(startPosition, newPos, null));
 
 
             }
-            else if (Color == ChessGame.TeamColor.BLACK && board.getPiece(new ChessPosition(row1 - 1, col1)) == null) {
+            else if (color == ChessGame.TeamColor.BLACK && board.getPiece(new ChessPosition(row1 - 1, col1)) == null) {
                 row1--;
                 ChessPosition newPos = new ChessPosition(row1, col1);
                 moves.add(new ChessMove(startPosition, newPos, null));
@@ -92,8 +90,8 @@ public class PawnMovesCalculator {
         col1 = col;
 
         /*Capture Logic*/
-        if(Color == ChessGame.TeamColor.WHITE && row1 < 7 || Color == ChessGame.TeamColor.BLACK && row1 > 2){
-            if(Color == ChessGame.TeamColor.WHITE){
+        if(color == ChessGame.TeamColor.WHITE && row1 < 7 || color == ChessGame.TeamColor.BLACK && row1 > 2){
+            if(color == ChessGame.TeamColor.WHITE){
                 row1++;
                 if(board.getPiece(new ChessPosition(row1, col1 + 1)) != null && board.getPiece(new ChessPosition(row1, col1 + 1)).getTeamColor() == ChessGame.TeamColor.BLACK){
                     col1++;
@@ -114,7 +112,7 @@ public class PawnMovesCalculator {
 
 
             }
-            else if (Color == ChessGame.TeamColor.BLACK ) {
+            else if (color == ChessGame.TeamColor.BLACK ) {
                 row1--;
                 if(board.getPiece(new ChessPosition(row1, col1 + 1)) != null && board.getPiece(new ChessPosition(row1, col1 + 1)).getTeamColor() == ChessGame.TeamColor.WHITE){
                     col1++;
@@ -140,7 +138,7 @@ public class PawnMovesCalculator {
         col1 = col;
 
         /*Promotion Logic*/
-        if(row1 == 7 && Color == ChessGame.TeamColor.WHITE || Color == ChessGame.TeamColor.BLACK &&  row1 == 2 ){
+        if(row1 == 7 && color == ChessGame.TeamColor.WHITE || color == ChessGame.TeamColor.BLACK &&  row1 == 2 ){
             int counter = 1;
 
             while(counter < 5) {
@@ -158,19 +156,19 @@ public class PawnMovesCalculator {
                     pp = ChessPiece.PieceType.QUEEN;
                 }
 
-                if (Color == ChessGame.TeamColor.WHITE && board.getPiece(new ChessPosition(row1 + 1, col1)) == null) {
+                if (color == ChessGame.TeamColor.WHITE && board.getPiece(new ChessPosition(row1 + 1, col1)) == null) {
                     row1++;
                     ChessPosition newPos = new ChessPosition(row1, col1);
                     moves.add(new ChessMove(startPosition, newPos, pp));
                 }
-                else if (Color == ChessGame.TeamColor.BLACK && board.getPiece(new ChessPosition(row1 - 1, col1)) == null) {
+                else if (color == ChessGame.TeamColor.BLACK && board.getPiece(new ChessPosition(row1 - 1, col1)) == null) {
                     row1--;
                     ChessPosition newPos = new ChessPosition(row1, col1);
                     moves.add(new ChessMove(startPosition, newPos, pp));
                 }
                 row1 = row;
 
-                if(Color == ChessGame.TeamColor.WHITE){
+                if(color == ChessGame.TeamColor.WHITE){
                     row1++;
                     if(board.getPiece(new ChessPosition(row1, col1 + 1)) != null && board.getPiece(new ChessPosition(row1, col1 + 1)).getTeamColor() == ChessGame.TeamColor.BLACK){
                         col1++;
@@ -191,7 +189,7 @@ public class PawnMovesCalculator {
 
 
                 }
-                else if (Color == ChessGame.TeamColor.BLACK ) {
+                else if (color == ChessGame.TeamColor.BLACK ) {
                     row1--;
                     if(board.getPiece(new ChessPosition(row1, col1 + 1)) != null && board.getPiece(new ChessPosition(row1, col1 + 1)).getTeamColor() == ChessGame.TeamColor.WHITE){
                         col1++;

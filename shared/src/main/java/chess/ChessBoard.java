@@ -12,11 +12,11 @@ import java.util.Objects;
 public class ChessBoard {
 
     private ChessPiece[][] squares = new ChessPiece[8][8];
-    ChessPosition WKPos;
-    ChessPosition BKPos;
+    ChessPosition wKPos;
+    ChessPosition bKPos;
     public ChessBoard() {
-        this.WKPos = null;
-        this.BKPos = null;
+        this.wKPos = null;
+        this.bKPos = null;
     }
 
     /**
@@ -120,8 +120,8 @@ public class ChessBoard {
         addPiece(new ChessPosition(8, 4), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN));
         addPiece(new ChessPosition(8, 5), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
 
-        this.WKPos = new ChessPosition(1, 5);
-        this.BKPos = new ChessPosition(8, 5);
+        this.wKPos = new ChessPosition(1, 5);
+        this.bKPos = new ChessPosition(8, 5);
 
     }
 
