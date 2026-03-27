@@ -21,27 +21,46 @@ public class SQLAuthDA implements AuthDataAccess{
         if(userName == null|| userName.isBlank()){
             throw new AuthException("Error: Bad request");
         }
-
         AuthData auth = AuthGenerator.genAuth(userName);
         var statement = "INSERT INTO pet (authToken, authData) VALUES (?, ?)";
-        String json = new Gson().toJson(auth);
-        executeUpdate(statement, auth.authToken(), json);
+        String authData = new Gson().toJson(auth);
+        executeUpdate(statement, auth.authToken(), authData);
         return auth;
     }
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
-
+        var statement = "DELETE FROM auth WHERE authToken=?";
+        executeUpdate(statement, authToken);
     }
 
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT authToken, authData FROM auth WHERE authToken=?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readAuth(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
         return null;
     }
 
     @Override
     public void clear() throws DataAccessException {
+        var statement = "TRUNCATE auth";
+        executeUpdate(statement);
+    }
 
+    private AuthData readAuth(ResultSet rs) throws SQLException {
+        var json = rs.getString("authData");
+        AuthData auth = new Gson().fromJson(json, AuthData.class);
+        return auth;
     }
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
@@ -68,17 +87,15 @@ public class SQLAuthDA implements AuthDataAccess{
         }
     }
 
-
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  Auth (
-              token VARCHAR(255) PRIMARY KEY,
-              data JSON NOT NULL,
+              authToken VARCHAR(255) PRIMARY KEY,
+              authData JSON NOT NULL,
               created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
-
 
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
