@@ -23,22 +23,26 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
-        this.userDB = new MemUserDA();
-        this.gameDB = new MemGameDA();
-        this.authDB = new MemAuthDA();
-        this.aServe = new AuthService(authDB);
-        this.uServe = new UserService(userDB, aServe);
-        this.gServe = new GameService(gameDB, aServe);
+        try {
+            this.userDB = new SQLUserDA();
+            this.gameDB = new SQLGameDA();
+            this.authDB = new SQLAuthDA();
+            this.aServe = new AuthService(authDB);
+            this.uServe = new UserService(userDB, aServe);
+            this.gServe = new GameService(gameDB, aServe);
 
-        javalin = Javalin.create(config -> config.staticFiles.add("web"));
-        javalin.post("/user", this::register);
-        javalin.post("/session", this::logIn);
-        javalin.delete("/session", this::logOut);
-        javalin.get("/game", this::getGames);
-        javalin.post("/game", this::newGame);
-        javalin.put("/game", this::joinGame);
-        javalin.delete("/db", this::deleteDB);
-        // Register your endpoints and exception handlers here.
+            javalin = Javalin.create(config -> config.staticFiles.add("web"));
+            javalin.post("/user", this::register);
+            javalin.post("/session", this::logIn);
+            javalin.delete("/session", this::logOut);
+            javalin.get("/game", this::getGames);
+            javalin.post("/game", this::newGame);
+            javalin.put("/game", this::joinGame);
+            javalin.delete("/db", this::deleteDB);
+            // Register your endpoints and exception handlers here.
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void register(@NotNull Context ctx) throws UserException {
@@ -48,6 +52,7 @@ public class Server {
             LoginResult result;
             result = uServe.register(user);
             ctx.result(new Gson().toJson(result));
+            ctx.status(200);
         }catch(AuthException e){
             ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
             ctx.status(400);

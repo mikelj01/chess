@@ -26,6 +26,7 @@ public class SQLUserDA implements UserDataAccess{
         try (Connection conn = DatabaseManager.getConnection()) {
             var statement = "SELECT userName, userData FROM users WHERE userName=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, userName);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         return readUser(rs);

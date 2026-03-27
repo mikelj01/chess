@@ -28,7 +28,7 @@ public class SQLAuthDA implements AuthDataAccess{
             throw new AuthException("Error: Bad request");
         }
         AuthData auth = AuthGenerator.genAuth(userName);
-        var statement = "INSERT INTO pet (authToken, authData) VALUES (?, ?)";
+        var statement = "INSERT INTO auth (authToken, authData) VALUES (?, ?)";
         String authData = new Gson().toJson(auth);
         executeUpdate(statement, auth.authToken(), authData);
         return auth;
@@ -95,7 +95,7 @@ public class SQLAuthDA implements AuthDataAccess{
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  Auth (
+            CREATE TABLE IF NOT EXISTS  auth (
               authToken VARCHAR(255) PRIMARY KEY,
               authData JSON NOT NULL,
               created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
