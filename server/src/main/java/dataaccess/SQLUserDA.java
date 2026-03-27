@@ -17,6 +17,10 @@ import static java.sql.Types.NULL;
 
 public class SQLUserDA implements UserDataAccess{
 
+    public SQLUserDA() throws DataAccessException {
+        configureDatabase();
+    }
+
     @Override
     public UserData getUser(String userName) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {

@@ -16,6 +16,12 @@ import static java.sql.Types.NULL;
 
 
 public class SQLAuthDA implements AuthDataAccess{
+
+    public SQLAuthDA() throws DataAccessException {
+        configureDatabase();
+    }
+
+
     @Override
     public AuthData createAuth(String userName) throws DataAccessException {
         if(userName == null|| userName.isBlank()){
