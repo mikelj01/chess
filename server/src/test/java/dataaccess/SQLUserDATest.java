@@ -7,6 +7,21 @@ import static org.junit.jupiter.api.Assertions.*;
 class SQLUserDATest {
 
     @Test
+    void getUserBad() {
+    }
+
+    @Test
+    void deleteUserBad() {
+    }
+
+    @Test
+    void addUserBad() {
+    }
+
+    @Test
+    void clearBad() {
+    }
+    @Test
     void getUser() {
     }
 

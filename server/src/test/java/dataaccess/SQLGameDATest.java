@@ -25,4 +25,25 @@ class SQLGameDATest {
     @Test
     void clear() {
     }
+
+    @Test
+    void clearBad() {
+    }
+    @Test
+    void deleteGameBad() {
+    }
+
+    @Test
+    void createGameBad() {
+    }
+
+    @Test
+    void joinGameBad() {
+    }
+
+    @Test
+    void listGamesBad() {
+    }
+
+
 }
