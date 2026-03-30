@@ -3,6 +3,7 @@ package dataaccess;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
+import org.eclipse.jetty.server.Authentication;
 import service.JoinException;
 import service.UserException;
 
@@ -46,14 +47,23 @@ public class SQLGameDA implements GameDataAccess{
 
     @Override
     public GameData joinGame(String color, int gameID, AuthData auth) throws DataAccessException {
+
         try (Connection conn = DatabaseManager.getConnection()) {
+            ArrayList<GameData> games = listGames();
+            ArrayList<Integer> ids = new ArrayList<>();
+            for(GameData game : games){
+                ids.add(game.gameID());
+            }
+            if(!ids.contains(gameID)){
+                throw new UserException("Error: bad request");
+            }
             GameData game = null;
             var statement = "SELECT id, gameData FROM games WHERE id=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 ps.setInt(1, gameID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        game = readGame(rs);
+                         game = readGame(rs);
                     }
                 }
             }
@@ -67,6 +77,7 @@ public class SQLGameDA implements GameDataAccess{
                 executeUpdate(statement, gameData, newGame.gameID());
                 return newGame;
             }
+
             if(Objects.equals(color, "BLACK") && game != null){
                 if(game.blackUsername() != null){
                     throw new JoinException("Error: That seat is already taken");
@@ -74,11 +85,16 @@ public class SQLGameDA implements GameDataAccess{
                 GameData newGame = new GameData(game.gameID(),game.whiteUsername(), auth.username() , game.gameName(), game.game());
                 statement = "UPDATE games SET gameData = ? WHERE id = ?";
                 String gameData = new Gson().toJson(newGame);
-                executeUpdate(statement, newGame.gameID(), gameData);
+                executeUpdate(statement, gameData, newGame.gameID());
                 return newGame;
             }
             throw new UserException("Error: Bad Request");
-        } catch (Exception e) {
+        }catch (JoinException e){
+            throw new JoinException(e.getMessage());
+        }catch (UserException e){
+            throw new UserException(e.getMessage());
+        }
+        catch (Exception e) {
             throw new DataAccessException("Error:" + e.getMessage());
         }
     }
