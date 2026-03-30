@@ -47,7 +47,6 @@ public class SQLGameDA implements GameDataAccess{
 
     @Override
     public GameData joinGame(String color, int gameID, AuthData auth) throws DataAccessException {
-
         try (Connection conn = DatabaseManager.getConnection()) {
             ArrayList<GameData> games = listGames();
             ArrayList<Integer> ids = new ArrayList<>();
@@ -132,9 +131,11 @@ public class SQLGameDA implements GameDataAccess{
         GameData game = new Gson().fromJson(json, GameData.class);
         return game;
     }
-
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
+            if(statement == null){
+                throw new DataAccessException("This is really bad");
+            }
             try (PreparedStatement ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (int i = 0; i < params.length; i++) {
                     Object param = params[i];

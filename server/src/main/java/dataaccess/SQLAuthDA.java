@@ -89,6 +89,9 @@ public class SQLAuthDA implements AuthDataAccess{
     }
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
+        if(statement == null){
+            throw new DataAccessException("This is really bad");
+        }
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (int i = 0; i < params.length; i++) {

@@ -28,9 +28,6 @@ public class Server {
             this.gameDB = new SQLGameDA();
             this.authDB = new SQLAuthDA();
 
-//            this.userDB = new MemUserDA();
-//            this.gameDB = new MemGameDA();
-//            this.authDB = new MemAuthDA();
 
             this.aServe = new AuthService(authDB);
             this.uServe = new UserService(userDB, aServe);
