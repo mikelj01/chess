@@ -23,7 +23,7 @@ public class GameService {
         this.aServe = aServe;
     }
 
-    public GameData newGame (String gameName, String authToken) throws UserException, AuthException {
+    public GameData newGame (String gameName, String authToken) throws DataAccessException {
         if (aServe.getAuth(authToken) == null) {
             throw new AuthException("Error: Not authorized");
         }
@@ -65,7 +65,7 @@ public class GameService {
         return null;
     }
 
-    public GameData joinGame(String authToken, JoinRequest req) throws UserException, AuthException, JoinException {
+    public GameData joinGame(String authToken, JoinRequest req) throws DataAccessException {
         try{
             AuthData auth = aServe.getAuth(authToken);
             if(auth == null){
@@ -83,12 +83,12 @@ public class GameService {
             throw new JoinException(e.getMessage());
         }
         catch (DataAccessException e) {
-            throw new UserException(e.getMessage());
+            throw new DataAccessException(e.getMessage());
         }
 
     }
 
-    public ArrayList<GameData> getGames(String authToken) throws UserException, AuthException {
+    public ArrayList<GameData> getGames(String authToken) throws DataAccessException {
         try {
             AuthData auth = aServe.getAuth(authToken);
             if(auth == null){
@@ -101,7 +101,7 @@ public class GameService {
         } catch (AuthException e) {
             throw new AuthException(e.getMessage());
         }catch (DataAccessException e) {
-            throw new UserException(e.getMessage());
+            throw new DataAccessException(e.getMessage());
         }
     }
 

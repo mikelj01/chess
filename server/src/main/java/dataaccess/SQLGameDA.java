@@ -24,16 +24,24 @@ public class SQLGameDA implements GameDataAccess{
 
     @Override
     public void deleteGame(int gameID) throws DataAccessException {
-        var statement = "DELETE FROM games WHERE id=?";
-        executeUpdate(statement,gameID);
+        try {
+            var statement = "DELETE FROM games WHERE id=?";
+            executeUpdate(statement, gameID);
+        }catch (Exception e){
+            throw new DataAccessException("Error:" + e.getMessage());
+        }
     }
 
     @Override
     public GameData createGame(GameData game) throws DataAccessException {
-        var statement = "INSERT INTO games (id, gameData) VALUES (? ?)";
-        String json = new Gson().toJson(game);
-        executeUpdate(statement,game.gameID(), json);
-        return game;
+        try {
+            var statement = "INSERT INTO games (id, gameData) VALUES (?, ?)";
+            String json = new Gson().toJson(game);
+            executeUpdate(statement, game.gameID(), json);
+            return game;
+        } catch (Exception e) {
+            throw new DataAccessException("Error:" + e.getMessage());
+        }
     }
 
     @Override
@@ -56,7 +64,7 @@ public class SQLGameDA implements GameDataAccess{
                 GameData newGame = new GameData(game.gameID(), auth.username(), game.blackUsername(), game.gameName(), game.game());
                 statement = "UPDATE games SET gameData = ? WHERE id = ?";
                 String gameData = new Gson().toJson(newGame);
-                executeUpdate(statement, newGame.gameID(), gameData);
+                executeUpdate(statement, gameData, newGame.gameID());
                 return newGame;
             }
             if(Objects.equals(color, "BLACK") && game != null){
@@ -71,7 +79,7 @@ public class SQLGameDA implements GameDataAccess{
             }
             throw new UserException("Error: Bad Request");
         } catch (Exception e) {
-            throw new DataAccessException(e.getMessage());
+            throw new DataAccessException("Error:" + e.getMessage());
         }
     }
 
@@ -88,15 +96,19 @@ public class SQLGameDA implements GameDataAccess{
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(e.getMessage());
+            throw new DataAccessException("Error:" + e.getMessage());
         }
         return result;
     }
 
     @Override
     public void clear() throws DataAccessException {
-        var statement = "TRUNCATE games";
-        executeUpdate(statement);
+        try {
+            var statement = "TRUNCATE games";
+            executeUpdate(statement);
+        }catch (Exception e){
+            throw new DataAccessException("Error: "+e.getMessage());
+        }
     }
 
     private GameData readGame(ResultSet rs) throws SQLException {

@@ -27,40 +27,59 @@ public class SQLAuthDA implements AuthDataAccess{
         if(userName == null|| userName.isBlank()){
             throw new AuthException("Error: Bad request");
         }
-        AuthData auth = AuthGenerator.genAuth(userName);
-        var statement = "INSERT INTO auth (authToken, authData) VALUES (?, ?)";
-        String authData = new Gson().toJson(auth);
-        executeUpdate(statement, auth.authToken(), authData);
-        return auth;
+        try {
+            AuthData auth = AuthGenerator.genAuth(userName);
+            var statement = "INSERT INTO auth (authToken, authData) VALUES (?, ?)";
+            String authData = new Gson().toJson(auth);
+            executeUpdate(statement, auth.authToken(), authData);
+            return auth;
+        } catch (Exception e) {
+            throw new DataAccessException("Error:" + e.getMessage());
+        }
     }
 
     @Override
-    public void deleteAuth(String authToken) throws DataAccessException {
-        var statement = "DELETE FROM auth WHERE authToken=?";
-        executeUpdate(statement, authToken);
+    public void deleteAuth(String authToken) throws DataAccessException, DBException {
+        try {
+            var statement = "DELETE FROM auth WHERE authToken=?";
+            executeUpdate(statement, authToken);
+        }catch (DataAccessException e){
+            throw new DBException("Error:" + e.getMessage());
+        }
     }
 
     @Override
-    public AuthData getAuth(String authToken) throws DataAccessException {
+    public AuthData getAuth(String authToken) throws DataAccessException, DBException {
         try (Connection conn = DatabaseManager.getConnection()) {
             var statement = "SELECT authToken, authData FROM auth WHERE authToken=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
                 try (ResultSet rs = ps.executeQuery()) {
+                    if(rs == null){
+                        throw new DBException("Error: Unauthorized");
+                    }
                     if (rs.next()) {
                         return readAuth(rs);
                     }
                 }
             }
-        } catch (Exception e) {
-            throw new DataAccessException(e.getMessage());
+        } catch(DBException e){
+            throw new DBException("Error: Unauthorized");
+        }
+        catch (Exception e) {
+            throw new DataAccessException("Error:" + e.getMessage());
         }
         return null;
     }
 
     @Override
     public void clear() throws DataAccessException {
-        var statement = "TRUNCATE auth";
-        executeUpdate(statement);
+        try {
+            var statement = "TRUNCATE auth";
+            executeUpdate(statement);
+        }catch (Exception e){
+            throw new DataAccessException("Error: " + e.getMessage());
+        }
     }
 
     private AuthData readAuth(ResultSet rs) throws SQLException {

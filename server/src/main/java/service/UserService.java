@@ -3,6 +3,7 @@ package service;
 import dataaccess.UserDataAccess;
 import dataaccess.DataAccessException;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class UserService {
     UserDataAccess userDB;
@@ -34,11 +35,14 @@ public class UserService {
         }
         try {
             UserData existUser = userDB.getUser(user.username());
+
+            //check password with bcrypt
+            boolean b = BCrypt.checkpw(user.password(), existUser.password());
             if(existUser == null){
                 throw new AuthException("Error: There is no account with that username");
             } else if (user.password()==null) {
                 throw new UserException("Error: bad Request");
-            } else if(!existUser.password().equals(user.password())){
+            } else if(!b){
                 throw new AuthException("Error: Incorrect Password");
             }
             AuthData userAuth = aServe.createAuth(user.username());

@@ -3,6 +3,7 @@ package dataaccess;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import server.websocket.AuthGenerator;
 import service.AuthException;
 import service.UserException;
@@ -34,15 +35,19 @@ public class SQLUserDA implements UserDataAccess{
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(e.getMessage());
+            throw new DataAccessException("Error:" + e.getMessage());
         }
         return null;
     }
 
     @Override
     public void deleteUser(String userName) throws DataAccessException {
-        var statement = "DELETE FROM users WHERE userName=?";
-        executeUpdate(statement, userName);
+        try {
+            var statement = "DELETE FROM users WHERE userName=?";
+            executeUpdate(statement, userName);
+        }catch (Exception e){
+            throw new DataAccessException("Error:" + e.getMessage());
+        }
     }
 
     @Override
@@ -54,16 +59,26 @@ public class SQLUserDA implements UserDataAccess{
         if(user.password() == null){
             throw new AuthException("Error: bad Request");
         }
-        var statement = "INSERT INTO users (userName, userData) VALUES (?, ?)";
-        String userData = new Gson().toJson(user);
-        executeUpdate(statement, user.username(), userData);
-        return user;
+        try {
+            var statement = "INSERT INTO users (userName, userData) VALUES (?, ?)";
+            String hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
+            UserData hashUser = new UserData(user.username(), hashedPassword, user.email());
+            String userData = new Gson().toJson(hashUser);
+            executeUpdate(statement, user.username(), userData);
+            return user;
+        } catch (Exception e) {
+            throw new DataAccessException("Error:" + e.getMessage());
+        }
     }
 
     @Override
     public void clear() throws DataAccessException {
-        var statement = "TRUNCATE users";
-        executeUpdate(statement);
+        try {
+            var statement = "TRUNCATE users";
+            executeUpdate(statement);
+        }catch (Exception e){
+            throw new DataAccessException("Error: " + e.getMessage());
+        }
     }
 
     private UserData readUser(ResultSet rs) throws SQLException {
