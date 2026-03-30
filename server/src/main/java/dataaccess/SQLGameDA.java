@@ -177,7 +177,7 @@ public class SQLGameDA implements GameDataAccess{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException(String.format("We are unable to configure database: %s", ex.getMessage()));
         } catch (DataAccessException e) {
             throw new DataAccessException(e.getMessage());
         }
