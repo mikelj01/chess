@@ -130,7 +130,7 @@ public class SQLUserDA implements UserDataAccess{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException(String.format("Error: Unable to configure database: %s", ex.getMessage()));
         } catch (DataAccessException e) {
             throw new DataAccessException(e.getMessage());
         }
