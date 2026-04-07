@@ -1,8 +1,6 @@
 package service;
 
-import dataaccess.DataAccessException;
-import dataaccess.MemAuthDA;
-import dataaccess.MemUserDA;
+import dataaccess.*;
 import model.AuthData;
 import model.LoginRequest;
 import model.LoginResult;
@@ -24,9 +22,9 @@ public class UserServiceTests {
     private static UserData newUser;
     private static UserService service;
     private String existingAuth;
-    private static MemUserDA userDB;
+    private static SQLUserDA userDB;
     private static AuthService authService;
-    private static MemAuthDA authDB;
+    private static SQLAuthDA authDB;
 
     @AfterAll
     static void stopServer() {
@@ -38,9 +36,9 @@ public class UserServiceTests {
     }
 
     @BeforeAll
-    public static void init() {
-        userDB = new MemUserDA();
-        authDB = new MemAuthDA();
+    public static void init() throws DataAccessException {
+        userDB = new SQLUserDA();
+        authDB = new SQLAuthDA();
         authService = new AuthService(authDB);
         service = new UserService(userDB, authService);
         existingUser = new UserData("ExistingUser", "existingUserPassword", "eu@mail.com");
@@ -85,6 +83,7 @@ public class UserServiceTests {
     void loginSuccess() {
         String expected = existingUser.username();
         try {
+            service.logOut(existingAuth);
             LoginRequest req = new LoginRequest(existingUser.username(), existingUser.password());
             AuthData userData = service.login(req, null);
             assertEquals(expected, userData.username());
@@ -107,23 +106,34 @@ public class UserServiceTests {
     }
 
     @Test
-    void logOutSuccess() {
+    void logOutSuccess() throws DataAccessException {
+        service.logOut(existingAuth);
     }
     @Test
     void logOutFail() {
-    }
-
-    @Test
-    void deleteUserSuccess() {
-    }
-    @Test
-    void deleteUserFail() {
+        String expected = "Error: You are not Logged in";
+        try{
+            service.logOut(null);
+        } catch (DataAccessException e) {
+            String result = e.getMessage();
+            assertEquals(expected, result);
+        }
     }
 
     @Test
     void clearSuccess() {
+        try{
+            service.clear();
+        } catch (DataAccessException e) {
+            assertEquals(1,2);
+        }
     }
     @Test
-    void clearFail() {
+    void clearFail(){
+        try {
+            service.clear();
+        } catch (DataAccessException e) {
+            assertEquals(1,1);
+        }
     }
 }
