@@ -91,6 +91,7 @@ public class Server {
         String authToken = ctx.header("authorization");
     try{
         uServe.logOut(authToken);
+        ctx.status(200);
     }catch (UserException e){
         ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
         ctx.status(400);
@@ -160,8 +161,8 @@ public class Server {
             var serializer = new Gson();
             JoinRequest req = serializer.fromJson(ctx.body(), JoinRequest.class);
             String authToken = ctx.header("authorization");
-            gServe.joinGame(authToken, req);
-            ctx.result("{}");
+            GameData game = gServe.joinGame(authToken, req);
+            ctx.result(new Gson().toJson(game));
             ctx.status(200);
         }catch (UserException e){
             ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
