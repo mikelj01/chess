@@ -1,29 +1,33 @@
 package ui;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 import jdk.jshell.spi.ExecutionControl;
 import model.*;
 import server.ServerFacade;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
 
 
 public class UI {
-    private String userName = null;
+    private String userName;
     private boolean signedIn = false;
     ServerFacade server;
+
+    public UI(ServerFacade f) {
+        this.server = f;
+    }
+
     public void run(){
         System.out.println("Welcome to Chess.");
         System.out.print(help());
-
         Scanner scanner = new Scanner(System.in);
         var result = "";
-
         while(!result.equals("quit")){
             String line = scanner.nextLine();
-
             try{
                 result = eval(line);
                 System.out.print(result);
@@ -34,6 +38,7 @@ public class UI {
         }
 
     }
+
     public String eval(String input){
         try {
             String[] tokens = input.toLowerCase().split(" ");
@@ -41,6 +46,7 @@ public class UI {
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "login" -> logIn(params);
+                case "register" -> register(params);
                 case "create" -> createGame(params);
                 case "list" -> listGames();
                 case "logout" -> logOut();
@@ -74,9 +80,33 @@ public class UI {
         return "You are not signed in";
     }
 
-    private String observeGame(String... params) {
-        return "halp";
+    private String register(String... params){
+        try {
+            UserData req = new UserData(params[0], params[1], params[2]);
+            server.register(req);
+            signedIn = true;
+            return req.username() + " signed in";
+        } catch (RuntimeException e) {
+            return e.getMessage();
+        }
     }
+
+    private String observeGame(String... params) {
+        if(!signedIn){
+            return "You are not Signed in";
+        }
+        GameList games = server.getGames();
+        ArrayList<Integer> nums = new ArrayList<>();
+        for(GameResult game : games.games()){
+            nums.add(game.gameID());
+        }
+        if(nums.contains(params[0])){
+            PrintBoard board = new PrintBoard(new ChessBoard(), params[1]);
+            board.print();
+            return "";
+        }
+        return "Invalid input";
+    }  //(Get valid gamenumber and return board)
 
     private String logOut() throws Exception {
         if(signedIn){

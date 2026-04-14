@@ -18,7 +18,7 @@ public class UserService {
             userDB.addUser(user);
            LoginRequest userSesh = new LoginRequest(user.username(), user.password());
            AuthData auth = aServe.createAuth(userSesh.username());
-            LoginResult result = new LoginResult(auth.username(), auth.authToken());
+           LoginResult result = new LoginResult(auth.username(), auth.authToken());
             return result;
         } catch (UserException e){
             throw new UserException(e.getMessage());

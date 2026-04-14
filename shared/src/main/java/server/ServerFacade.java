@@ -17,18 +17,20 @@ public class ServerFacade {
 
 
     private final String serverURL;
-
+    public String authToken;
     public ServerFacade(String url){
         serverURL = url;
+        this.authToken = null;
     }
-
 
     public LoginResult register (UserData req){
         try {
             var path = "/user";
-            return this.makeRequest("POST", path, req, LoginResult.class);
+            LoginResult result = this.makeRequest("POST", path, req, LoginResult.class);
+            authToken = result.authToken();
+            return result;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("You are already logged in");
         }
     }
 
@@ -46,6 +48,7 @@ public class ServerFacade {
         try {
             var path = "/session";
              this.makeRequest("DELETE", path, req, null);
+             authToken = null;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -78,14 +81,21 @@ public class ServerFacade {
         }
     }
 
-
-
+    public void delete(){
+        try {
+            var path = "/db";
+            this.makeRequest("DELETE", path,null , null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) {
         try {
             URL url = (new URI(serverURL + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
+            http.setRequestProperty("authorization", authToken);
             http.setDoOutput(true);
             writeBody(request, http);
             http.connect();
@@ -117,7 +127,7 @@ public class ServerFacade {
 
     private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
         T response = null;
-        if (http.getContentLength() < 0) {
+        if (http.getContentLength() > 0) {
             try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader reader = new InputStreamReader(respBody);
                 if (responseClass != null) {
