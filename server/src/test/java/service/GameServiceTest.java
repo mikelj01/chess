@@ -42,7 +42,7 @@ class GameServiceTest {
         service = new GameService(gameDB, authService);
         existingUser = new UserData("ExistingUser", "existingUserPassword", "eu@mail.com");
         newUser = new UserData("NewUser", "newUserPassword", "nu@mail.com");
-        String Auth = authService.createAuth(existingUser.username()).authToken();
+        String auth = authService.createAuth(existingUser.username()).authToken();
     }
 
     @BeforeEach

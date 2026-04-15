@@ -65,19 +65,5 @@ public class PrintBoard {
         }
         boardText += RESET_TEXT_COLOR + RESET_BG_COLOR;
         return boardText;
-
-
-//
-//
-//        for (ChessPiece[] inner : board.getSquares()) {
-//            for (ChessPiece piece : inner) {
-//
-//
-//
-//            }
-//            System.out.print("\n");
-//
-//        }
-//    }
     }
 }

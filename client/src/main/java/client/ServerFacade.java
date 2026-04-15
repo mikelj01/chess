@@ -43,7 +43,7 @@ public class ServerFacade {
         }
     }
 
-    public void Logout (String req){
+    public void logout (String req){
         try {
             var path = "/session";
              this.makeRequest("DELETE", path, req, null);

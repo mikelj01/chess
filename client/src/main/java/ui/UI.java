@@ -64,8 +64,8 @@ public class UI {
         if(signedIn){
             String gameID = params[0];
             try {
-                int ID = Integer.parseInt(gameID);
-                JoinRequest req = new JoinRequest(params[1], ID);
+                int iD= Integer.parseInt(gameID);
+                JoinRequest req = new JoinRequest(params[1], iD);
                 GameData game = server.joinGame(req);
                 PrintBoard board = new PrintBoard(game.game().getBoard(), params[1]);
                 String result = board.print();
@@ -101,10 +101,10 @@ public class UI {
         for(GameResult game : games.games()){
             nums.add(game.gameID());
         }
-        int ID = Integer.parseInt(params[0]);
-        if(nums.contains(ID)){
+        int iD= Integer.parseInt(params[0]);
+        if(nums.contains(iD)){
             for(GameResult game : games.games()){
-                if(game.gameID() == ID) {
+                if(game.gameID() == iD) {
                     ChessGame myGame = new ChessGame();
                     PrintBoard board = new PrintBoard(myGame.getBoard(), "white");
                     String result = board.print();
@@ -118,7 +118,7 @@ public class UI {
 
     private String logOut() throws Exception {
         if(signedIn){
-            server.Logout(userName);
+            server.logout(userName);
             signedIn = false;
             return String.format("You logged out. \n" + help());
         }

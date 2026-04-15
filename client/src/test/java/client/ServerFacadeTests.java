@@ -42,7 +42,7 @@ public class ServerFacadeTests {
 
     @Test
     public void registerSuccess() {
-        facade.Logout(authData.username());
+        facade.logout(authData.username());
         UserData req = new UserData("player1", "password", "p1@email.com");
         authData = facade.register(req);
         assertTrue(authData.authToken().length() > 10);
@@ -50,7 +50,7 @@ public class ServerFacadeTests {
 
     @Test
     public void registerF() {
-        facade.Logout(authData.username());
+        facade.logout(authData.username());
         UserData req = new UserData("player1", "password", "p1@email.com");
         var authData = facade.register(req);
         try{
@@ -63,7 +63,7 @@ public class ServerFacadeTests {
 
     @Test
     public void loginSuccess() {
-        facade.Logout(authData.username());
+        facade.logout(authData.username());
         LoginRequest req = new LoginRequest("existingUser", "password");
         authData = facade.login(req);
         assertTrue(authData.authToken().length() > 10);
@@ -72,7 +72,7 @@ public class ServerFacadeTests {
     @Test
     public void loginF() {
         try {
-            facade.Logout(authData.username());
+            facade.logout(authData.username());
             LoginRequest req = new LoginRequest("non-user", "password");
             LoginResult result = facade.login(req);
         } catch (Exception e) {
@@ -83,9 +83,9 @@ public class ServerFacadeTests {
 
     @Test
     public void logoutSuccess() {
-        facade.Logout(authData.username());
+        facade.logout(authData.username());
         try {
-            facade.Logout(authData.username());
+            facade.logout(authData.username());
         } catch (Exception e) {
             String[] parts = e.getMessage().split(":");
             String code = parts[parts.length - 1].trim();
@@ -98,7 +98,7 @@ public class ServerFacadeTests {
         String auth = facade.authToken;
         try {
             facade.authToken = "beans";
-            facade.Logout(authData.username());
+            facade.logout(authData.username());
         } catch (Exception e) {
             facade.authToken = auth;
             String[] parts = e.getMessage().split(":");
@@ -109,13 +109,13 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void CreateGameSuccess(){
+    public void createGameSuccess(){
         CreateGameRequest req = new CreateGameRequest("beans");
         NewGameResult res = facade.newGame(req);
         assertTrue(res.gameID() == 1);
     }
     @Test
-    public void CreateGameFail(){
+    public void createGameFail(){
         CreateGameRequest req = new CreateGameRequest("beans");
         NewGameResult res = facade.newGame(req);
         try{
@@ -129,7 +129,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void GetGamesSuccess(){
+    public void getGamesSuccess(){
         CreateGameRequest req = new CreateGameRequest("beans");
         facade.newGame(req);
         GameList games = facade.getGames();
@@ -137,7 +137,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void GetGamesFail() {
+    public void getGamesFail() {
         String auth = facade.authToken;
         try {
             facade.authToken = "beans";
