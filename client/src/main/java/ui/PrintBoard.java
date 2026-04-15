@@ -16,12 +16,19 @@ public class PrintBoard {
     }
 
     public String print() {
-        boolean toggle = false;
-        if (color == "black") {
-            toggle = true;
+        boolean toggle = true;
+        ChessPiece[][] squares = board.getSquares();
+        if (color == "white") {
+            toggle = false;
+            for (int i = 0; i < squares.length; i++) {
+                for (int j = 0; j < squares[i].length / 2; j++) {
+                    ChessPiece temp = squares[i][j];
+                    squares[i][j] = squares[squares.length - 1 - i][squares[i].length - 1 - j];
+                    squares[squares.length - 1 - i][squares[i].length - 1 - j] = temp;
+                }
+            }
         }
 
-        ChessPiece[][] squares = board.getSquares();
         String boardText = "";
         for (ChessPiece[] inner : squares) {
             for (ChessPiece piece : inner) {
@@ -30,20 +37,20 @@ public class PrintBoard {
                     if (toggle == false) {
                         boardText += SET_BG_COLOR_WHITE;
                     } else {
-                        boardText +=SET_BG_COLOR_RED;
+                        boardText +=SET_BG_COLOR_DARK_GREEN;
                     }
-                    boardText += " ";
+                    boardText += "   ";
                 } else {
                     String pColor;
                     if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                        pColor = SET_TEXT_COLOR_GREEN;
+                        pColor = SET_TEXT_COLOR_LIGHT_GREY;
                     } else {
-                        pColor = SET_TEXT_COLOR_BLUE;
+                        pColor = SET_TEXT_COLOR_BLACK;
                     }
                     if (toggle == false) {
-                        boardText += SET_BG_COLOR_WHITE + pColor + piece.toString();
+                        boardText += SET_BG_COLOR_WHITE + pColor + " " + piece.toString() + " ";
                     } else {
-                        boardText +=SET_BG_COLOR_RED + pColor + piece.toString();
+                        boardText +=SET_BG_COLOR_DARK_GREEN + pColor + " " + piece.toString() + " ";
                     }
                 }
                 toggle = !toggle;
@@ -54,6 +61,7 @@ public class PrintBoard {
             boardText += "\n";
 
         }
+        boardText += RESET_TEXT_COLOR + RESET_BG_COLOR;
         return boardText;
 
 

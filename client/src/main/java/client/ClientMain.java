@@ -20,5 +20,6 @@ public class ClientMain {
         facade = new ServerFacade("http://localhost:8000");
         UI uI = new UI(facade);
         uI.run();
+        server.stop();
     }
 }

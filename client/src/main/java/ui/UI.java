@@ -68,8 +68,8 @@ public class UI {
                 JoinRequest req = new JoinRequest(params[1], ID);
                 GameData game = server.joinGame(req);
                 PrintBoard board = new PrintBoard(game.game().getBoard(), params[1]);
-                board.print();
-                return "";
+                String result = board.print();
+                return result;
             } catch (NumberFormatException e) {
                 return "Not a valid game ID";
             } catch (Exception e) {
@@ -100,10 +100,17 @@ public class UI {
         for(GameResult game : games.games()){
             nums.add(game.gameID());
         }
-        if(nums.contains(params[0])){
-            PrintBoard board = new PrintBoard(new ChessBoard(), params[1]);
-            board.print();
-            return "";
+        int ID = Integer.parseInt(params[0]);
+        if(nums.contains(ID)){
+            for(GameResult game : games.games()){
+                if(game.gameID() == ID) {
+                    ChessGame myGame = new ChessGame();
+                    PrintBoard board = new PrintBoard(myGame.getBoard(), "white");
+                    String result = board.print();
+                    return result;
+                }
+            }
+
         }
         return "Invalid input";
     }  //(Get valid gamenumber and return board)

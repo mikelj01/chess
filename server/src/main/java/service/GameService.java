@@ -33,7 +33,8 @@ public class GameService {
         try {
             ArrayList<GameData> games = gameDB.listGames();
             if(games == null){
-                GameData newGame = new GameData(1, null, null, gameName, new ChessGame());
+                ChessGame myGame = new ChessGame();
+                GameData newGame = new GameData(1, null, null, gameName, myGame);
                 gameDB.createGame(newGame);
                 return newGame;
             }
@@ -42,7 +43,8 @@ public class GameService {
                     throw new UserException("Error: That Game Name is Taken");
                 }
             }
-            GameData newGame = new GameData(games.size()+1, null, null, gameName, new ChessGame());
+            ChessGame myGame = new ChessGame();
+            GameData newGame = new GameData(games.size()+1, null, null, gameName, myGame);
             gameDB.createGame(newGame);
             return newGame;
         }catch(AuthException e){
@@ -50,7 +52,8 @@ public class GameService {
         }catch(DataAccessException e){
             try {
                 if (e.getMessage() == "Error: There are no Games") {
-                    GameData newGame = new GameData(1, null, null, gameName, new ChessGame());
+                    ChessGame myGame = new ChessGame();
+                    GameData newGame = new GameData(1, null, null, gameName, myGame);
                     gameDB.createGame(newGame);
                 }
                 else{
