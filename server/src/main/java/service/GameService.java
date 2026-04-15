@@ -116,11 +116,11 @@ public class GameService {
         }
     }
 
-    public void deleteGame(int gameID){
+    public void deleteGame(int gameID) throws DataAccessException {
         try {
             gameDB.deleteGame(gameID);
         }catch(DataAccessException e){
-            System.out.print("beans");
+            throw new DataAccessException(e.getMessage());
         }
     }
 }

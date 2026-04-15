@@ -180,7 +180,7 @@ public class Server {
         }
     }
 
-    private void deleteDB(@NotNull Context ctx){
+    private void deleteDB(@NotNull Context ctx) throws DataAccessException {
         try {
 
             uServe.clear();
