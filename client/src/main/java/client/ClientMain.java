@@ -16,8 +16,8 @@ public class ClientMain {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println("♕ 240 Chess Client: " + piece);
         server = new Server();
-        var port = server.run(8000);
-        facade = new ServerFacade("http://localhost:8000");
+        var port = server.run(0);
+        facade = new ServerFacade("http://localhost:0");
         UI uI = new UI(facade);
         uI.run();
         server.stop();
