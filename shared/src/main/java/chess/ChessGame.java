@@ -251,20 +251,20 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         if(!isInCheck(teamColor)){
-            int row2 = 1;
-            int col2 = 1;
+            int row3 = 1;
+            int col3 = 1;
             Collection<ChessPosition> myPieces = new HashSet<ChessPosition>();
-            while (row2 < 9){
-                while(col2 < 9){
-                    ChessPosition pos = new ChessPosition(row2, col2);
+            while (row3 < 9){
+                while(col3 < 9){
+                    ChessPosition pos = new ChessPosition(row3, col3);
                     ChessPiece piece = board.getPiece(pos);
                     if(piece != null && piece.getTeamColor() == teamColor){
                         myPieces.add(pos);
                     }
-                    col2++;
+                    col3++;
                 }
-                col2 = 1;
-                row2++;
+                col3 = 1;
+                row3++;
             }
             Collection<ChessMove> legMoves = new HashSet<ChessMove>();
             for(ChessPosition piece : myPieces){
