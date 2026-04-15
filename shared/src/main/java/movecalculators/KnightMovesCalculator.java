@@ -46,14 +46,14 @@ public class KnightMovesCalculator {
                 }
             }
         }
-        row1 = row;
-        col1 = col;
+        int row2 = row;
+        int col2 = col;
 
-        row1 += 2;
-        col1 --;
+        row2 += 2;
+        col2 --;
 
-        if(row1 < 9 && row1 > 0 && col1 < 9 && col1 > 0){
-            ChessPosition newPos = new ChessPosition(row1, col1);
+        if(row2 < 9 && row2 > 0 && col2 < 9 && col2 > 0){
+            ChessPosition newPos = new ChessPosition(row2, col2);
             if (board.getPiece(newPos) == null) {
                 moves.add(new ChessMove(startPosition, newPos, null));
             }
@@ -67,14 +67,14 @@ public class KnightMovesCalculator {
             }
         }
 
-        row1 = row;
-        col1 = col;
+        int row3 = row;
+        int col3 = col;
 
-        row1 -= 2;
-        col1 --;
+        row3 -= 2;
+        col3 --;
 
-        if(row1 < 9 && row1 > 0 && col1 < 9 && col1 > 0){
-            ChessPosition newPos = new ChessPosition(row1, col1);
+        if(row3 < 9 && row3 > 0 && col3 < 9 && col3 > 0){
+            ChessPosition newPos = new ChessPosition(row3, col3);
             if (board.getPiece(newPos) == null) {
                 moves.add(new ChessMove(startPosition, newPos, null));
             }
@@ -87,14 +87,14 @@ public class KnightMovesCalculator {
                 }
             }
         }
-        row1 = row;
-        col1 = col;
+        int row4 = row;
+        int col4 = col;
 
-        row1 -= 2;
-        col1 ++;
+        row4 -= 2;
+        col4 ++;
 
-        if(row1 < 9 && row1 > 0 && col1 < 9 && col1 > 0){
-            ChessPosition newPos = new ChessPosition(row1, col1);
+        if(row4 < 9 && row4 > 0 && col4 < 9 && col4 > 0){
+            ChessPosition newPos = new ChessPosition(row4, col4);
             if (board.getPiece(newPos) == null) {
                 moves.add(new ChessMove(startPosition, newPos, null));
             }
