@@ -73,7 +73,12 @@ public class UI {
             } catch (NumberFormatException e) {
                 return "Not a valid game ID";
             } catch (Exception e) {
-                throw new Exception(e);
+                String msg = e.getMessage();
+                String[] parts = msg.split(":");
+                String code = parts[parts.length - 1].trim();
+                if(code.equals("400")){
+                    return "Please Enter a valid color:  'white' or 'black'";
+                }
             }
 
         }
@@ -83,6 +88,9 @@ public class UI {
 
     private String register(String... params){
         try {
+            if(params.length != 3){
+                return "Expected <USERNAME> <PASSWORD> <EMAIL>";
+            }
             UserData req = new UserData(params[0], params[1], params[2]);
             server.register(req);
             signedIn = true;
@@ -101,7 +109,12 @@ public class UI {
         for(GameResult game : games.games()){
             nums.add(game.gameID());
         }
-        int iD= Integer.parseInt(params[0]);
+        int iD;
+        try {
+            iD = Integer.parseInt(params[0]);
+        } catch (NumberFormatException e) {
+            return "Invalid game ID";
+        }
         if(nums.contains(iD)){
             for(GameResult game : games.games()){
                 if(game.gameID() == iD) {
@@ -159,6 +172,12 @@ public class UI {
                 signedIn = true;
                 return String.format("You signed in as %s. \n " + help(), userName);
             } catch (Exception e) {
+                String msg = e.getMessage();
+                String[] parts = msg.split(":");
+                String code = parts[parts.length - 1].trim();
+                if(code.equals("401")){
+                    return "Incorrect Login Information";
+                }
                 return e.getMessage();
             }
         }
