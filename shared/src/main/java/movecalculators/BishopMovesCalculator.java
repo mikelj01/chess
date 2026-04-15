@@ -12,15 +12,17 @@ public class BishopMovesCalculator {
     protected final ChessGame.TeamColor color;
     private final int row;
     private final int col;
+    Collection<ChessMove> moves;
+
     public BishopMovesCalculator(ChessBoard board, ChessPosition startPosition){
         this.board = board;
         this.startPosition = startPosition;
         this.color = board.getPiece(startPosition).getTeamColor();
         this.row = startPosition.getRow();
         this.col = startPosition.getColumn();
+        this.moves = new HashSet<ChessMove>();
     }
     public Collection<ChessMove> getMoves(ChessBoard board, ChessPosition position){
-        Collection<ChessMove> moves = new HashSet<ChessMove>();
         int row1 = row;
         int col1 = col;
         while (row1 < 8 && col1 < 8) {
@@ -114,6 +116,21 @@ public class BishopMovesCalculator {
         return moves;
     }
 
+    public void addMove(ChessPosition newPos){
+        if (board.getPiece(newPos) == null) {
+            moves.add(new ChessMove(startPosition, newPos, null));
+        }
+        else{
+            if (board.getPiece(newPos).getTeamColor() != color) {
+                ChessMove newMove = new ChessMove(startPosition, newPos, null);
+                newMove.capMove = true;
+                moves.add(newMove);
+
+            }
+        }
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
@@ -125,6 +142,7 @@ public class BishopMovesCalculator {
         }
         return false;
     }
+
 
     @Override
     public int hashCode() {
