@@ -4,6 +4,8 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 
+import java.util.Objects;
+
 import static ui.EscapeSequences.*;
 
 public class PrintBoard {
@@ -18,7 +20,7 @@ public class PrintBoard {
     public String print() {
         boolean toggle = true;
         ChessPiece[][] squares = board.getSquares();
-        if (color == "white") {
+        if (Objects.equals(color, "white")) {
             toggle = false;
             for (int i = 0; i < squares.length; i++) {
                 for (int j = 0; j < squares[i].length / 2; j++) {

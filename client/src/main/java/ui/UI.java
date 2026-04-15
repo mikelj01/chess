@@ -31,10 +31,12 @@ public class UI {
             try{
                 result = eval(line);
                 System.out.print(result + "\n");
+
             }catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg + "\n");
             }
+
         }
 
     }
@@ -85,9 +87,9 @@ public class UI {
             UserData req = new UserData(params[0], params[1], params[2]);
             server.register(req);
             signedIn = true;
-            return req.username() + " signed in \n";
+            return req.username() + " signed in \n" + help();
         } catch (RuntimeException e) {
-            return e.getMessage() + "\n";
+            return e.getMessage() + "\n" + help();
         }
     }
 
@@ -119,7 +121,7 @@ public class UI {
         if(signedIn){
             server.Logout(userName);
             signedIn = false;
-            return String.format("You logged out. \n");
+            return String.format("You logged out. \n" + help());
         }
         throw new Exception("You are not Signed in");
     }
@@ -156,7 +158,7 @@ public class UI {
                 LoginRequest req = new LoginRequest(userName, password);
                 server.Login(req);
                 signedIn = true;
-                return String.format("You signed in as %s. \n", userName);
+                return String.format("You signed in as %s. \n " + help(), userName);
             } catch (Exception e) {
                 return e.getMessage();
             }
@@ -171,6 +173,7 @@ public class UI {
                     To create an account, please enter: register <USERNAME> <PASSWORD> <EMAIL>  
                     To log in, please enter: login <USERNAME> <PASSWORD>
                     To close, please enter: quit
+                    
                     """;
         }
         else{
@@ -182,6 +185,7 @@ public class UI {
                     To logout: logout
                     To close: quit
                     To list commands again: help
+                    
                     """;
         }
     }
