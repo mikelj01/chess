@@ -1,10 +1,8 @@
 package ui;
 
-import chess.ChessBoard;
 import chess.ChessGame;
-import jdk.jshell.spi.ExecutionControl;
 import model.*;
-import server.ServerFacade;
+import client.ServerFacade;
 
 import java.util.ArrayList;
 import java.util.Arrays;

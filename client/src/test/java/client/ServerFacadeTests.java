@@ -1,8 +1,10 @@
+package client;
+
 import chess.ChessBoard;
+import client.ServerFacade;
 import model.*;
 import org.junit.jupiter.api.*;
 import server.Server;
-import server.ServerFacade;
 import ui.PrintBoard;
 
 import java.util.Objects;
@@ -22,7 +24,7 @@ public class ServerFacadeTests {
         var port = server.run(8000);
         System.out.println("Started test HTTP server on " + port);
         facade = new ServerFacade("http://localhost:8000");
-        //facade = new ServerFacade("http://127.0.0.1:8000");
+        //facade = new client.ServerFacade("http://127.0.0.1:8000");
     }
 
     @BeforeEach
