@@ -155,7 +155,7 @@ public class UI {
                 userName = params[0];
                 String password = params[1];
                 LoginRequest req = new LoginRequest(userName, password);
-                server.Login(req);
+                server.login(req);
                 signedIn = true;
                 return String.format("You signed in as %s. \n " + help(), userName);
             } catch (Exception e) {

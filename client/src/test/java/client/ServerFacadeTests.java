@@ -21,9 +21,9 @@ public class ServerFacadeTests {
     @BeforeAll
     public static void init() {
         server = new Server();
-        var port = server.run(8000);
+        var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
-        facade = new ServerFacade("http://localhost:8000");
+        facade = new ServerFacade("http://localhost:" + port);
         //facade = new client.ServerFacade("http://127.0.0.1:8000");
     }
 
@@ -56,9 +56,29 @@ public class ServerFacadeTests {
         try{
             facade.register(req);
         } catch (Exception e) {
-            assertTrue(e.getMessage().equals("You are already logged in"));
+            assertTrue(e.getMessage().equals("You are already registered"));
         }
         assertTrue(authData.authToken().length() > 10);
+    }
+
+    @Test
+    public void loginSuccess() {
+        facade.Logout(authData.username());
+        LoginRequest req = new LoginRequest("existingUser", "password");
+        authData = facade.login(req);
+        assertTrue(authData.authToken().length() > 10);
+    }
+
+    @Test
+    public void loginF() {
+        try {
+            facade.Logout(authData.username());
+            LoginRequest req = new LoginRequest("non-user", "password");
+            LoginResult result = facade.login(req);
+        } catch (Exception e) {
+            assertTrue(e.getMessage().length() > 1);
+        }
+
     }
 
     @Test

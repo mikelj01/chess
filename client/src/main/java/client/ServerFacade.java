@@ -32,7 +32,7 @@ public class ServerFacade {
         }
     }
 
-    public LoginResult Login (LoginRequest req){
+    public LoginResult login (LoginRequest req){
         try {
             var path = "/session";
             LoginResult result = this.makeRequest("POST", path, req, LoginResult.class);
