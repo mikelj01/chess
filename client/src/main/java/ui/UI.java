@@ -82,6 +82,7 @@ public class UI {
         return "You are not signed in";
     }
 
+
     private String register(String... params){
         try {
             UserData req = new UserData(params[0], params[1], params[2]);
