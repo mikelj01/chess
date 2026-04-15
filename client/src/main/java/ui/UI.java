@@ -78,6 +78,10 @@ public class UI {
                 String code = parts[parts.length - 1].trim();
                 if(code.equals("400")){
                     return "Please Enter a valid color:  'white' or 'black'";
+                } else if (code.equals("403")) {
+                    return "That spot is already taken";
+                }else{
+                    return "Invalid input";
                 }
             }
 
@@ -103,6 +107,9 @@ public class UI {
     private String observeGame(String... params) {
         if(!signedIn){
             return "You are not Signed in";
+        }
+        if(params.length != 1){
+            return "Expected <game ID>";
         }
         GameList games = server.getGames();
         ArrayList<Integer> nums = new ArrayList<>();

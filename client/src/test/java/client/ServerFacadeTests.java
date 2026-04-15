@@ -186,10 +186,18 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void printBoardSuccess(){
+    public void printBoardSuccessW(){
         ChessBoard board = new ChessBoard();
         board.resetBoard();
         PrintBoard printer = new PrintBoard(board, "white");
+        String result = printer.print();
+        System.out.print(result);
+    }
+    @Test
+    public void printBoardSuccessB(){
+        ChessBoard board = new ChessBoard();
+        board.resetBoard();
+        PrintBoard printer = new PrintBoard(board, "black");
         String result = printer.print();
         System.out.print(result);
     }

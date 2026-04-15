@@ -18,11 +18,10 @@ public class PrintBoard {
     }
 
     public String print() {
-        boolean toggle = true;
+        boolean toggle = false;
         ChessPiece[][] squares = board.getSquares();
-        if (Objects.equals(color, "white")) {
-            toggle = false;
-            for (int i = 0; i < squares.length; i++) {
+        if (Objects.equals(color, "black")) {
+            for (int i = 0; i < squares.length ; i++) {
                 for (int j = 0; j < squares[i].length / 2; j++) {
                     ChessPiece temp = squares[i][j];
                     squares[i][j] = squares[squares.length - 1 - i][squares[i].length - 1 - j];
@@ -32,9 +31,8 @@ public class PrintBoard {
         }
 
         String boardText = "";
-        for (ChessPiece[] inner : squares) {
-            for (ChessPiece piece : inner) {
-                //boardText += SET_TEXT_COLOR_BLACK + "|";
+        for (int i = squares.length - 1; i >= 0; i--) {
+            for (ChessPiece piece : squares[i]) {
                 if (piece == null) {
                     if (toggle == false) {
                         boardText += SET_BG_COLOR_WHITE;
