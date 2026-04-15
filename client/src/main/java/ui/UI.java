@@ -30,10 +30,10 @@ public class UI {
             String line = scanner.nextLine();
             try{
                 result = eval(line);
-                System.out.print(result);
+                System.out.print(result + "\n");
             }catch (Throwable e) {
                 var msg = e.toString();
-                System.out.print(msg);
+                System.out.print(msg + "\n");
             }
         }
 
@@ -71,7 +71,7 @@ public class UI {
                 board.print();
                 return "";
             } catch (NumberFormatException e) {
-                System.out.println("Not a valid game ID");
+                return "Not a valid game ID";
             } catch (Exception e) {
                 throw new Exception(e);
             }
@@ -85,9 +85,9 @@ public class UI {
             UserData req = new UserData(params[0], params[1], params[2]);
             server.register(req);
             signedIn = true;
-            return req.username() + " signed in";
+            return req.username() + " signed in \n";
         } catch (RuntimeException e) {
-            return e.getMessage();
+            return e.getMessage() + "\n";
         }
     }
 
@@ -112,7 +112,7 @@ public class UI {
         if(signedIn){
             server.Logout(userName);
             signedIn = false;
-            return String.format("%s logged out.", userName);
+            return String.format("You logged out. \n");
         }
         throw new Exception("You are not Signed in");
     }
@@ -136,7 +136,7 @@ public class UI {
         if(signedIn) {
             CreateGameRequest req = new CreateGameRequest(params[0]);
             server.newGame(req);
-            return "Creation Sucessful" + listGames();
+            return "Creation Sucessful \n" + listGames();
         }
         return "You are not signed in";
     }
@@ -149,7 +149,7 @@ public class UI {
                 LoginRequest req = new LoginRequest(userName, password);
                 server.Login(req);
                 signedIn = true;
-                return String.format("You signed in as %s.", userName);
+                return String.format("You signed in as %s. \n", userName);
             } catch (Exception e) {
                 return e.getMessage();
             }

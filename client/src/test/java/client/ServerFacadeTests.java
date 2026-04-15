@@ -1,10 +1,13 @@
-import model.LoginResult;
-import model.UserData;
+import chess.ChessBoard;
+import model.*;
 import org.junit.jupiter.api.*;
 import server.Server;
 import server.ServerFacade;
+import ui.PrintBoard;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Objects;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ServerFacadeTests {
@@ -57,11 +60,116 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void LogoutSuccess() {
+    public void logoutSuccess() {
         facade.Logout(authData.username());
-        assertTrue(authData == null);
+        try {
+            facade.Logout(authData.username());
+        } catch (Exception e) {
+            String[] parts = e.getMessage().split(":");
+            String code = parts[parts.length - 1].trim();
+            assertTrue(code.equals("401"));
+        }
     }
 
+    @Test
+    public void logoutFail() {
+        String auth = facade.authToken;
+        try {
+            facade.authToken = "beans";
+            facade.Logout(authData.username());
+        } catch (Exception e) {
+            facade.authToken = auth;
+            String[] parts = e.getMessage().split(":");
+            String code = parts[parts.length - 1].trim();
+            assertTrue(code.equals("401"));
+        }
+        facade.authToken = auth;
+    }
 
+    @Test
+    public void CreateGameSuccess(){
+        CreateGameRequest req = new CreateGameRequest("beans");
+        NewGameResult res = facade.newGame(req);
+        assertTrue(res.gameID() == 1);
+    }
+    @Test
+    public void CreateGameFail(){
+        CreateGameRequest req = new CreateGameRequest("beans");
+        NewGameResult res = facade.newGame(req);
+        try{
+            NewGameResult res2 = facade.newGame(req);
+            assertTrue(res2.gameID() == 2);
+        } catch (Exception e) {
+            String[] parts = e.getMessage().split(":");
+            String code = parts[parts.length - 1].trim();
+            assertTrue(code.equals("400"));
+        }
+    }
+
+    @Test
+    public void GetGamesSuccess(){
+        CreateGameRequest req = new CreateGameRequest("beans");
+        facade.newGame(req);
+        GameList games = facade.getGames();
+        assertFalse(games.games().isEmpty());
+    }
+
+    @Test
+    public void GetGamesFail() {
+        String auth = facade.authToken;
+        try {
+            facade.authToken = "beans";
+            facade.getGames();
+        } catch (Exception e) {
+            facade.authToken = auth;
+            String[] parts = e.getMessage().split(":");
+            String code = parts[parts.length - 1].trim();
+            assertTrue(code.equals("401"));
+        }
+        facade.authToken = auth;
+    }
+
+    @Test
+    public void joinSuccess(){
+        CreateGameRequest req = new CreateGameRequest("beans");
+        facade.newGame(req);
+        JoinRequest req1 = new JoinRequest("White", 1);
+        GameData game = facade.joinGame(req1);
+        assertTrue(Objects.equals(game.whiteUsername(), "existingUser"));
+    }
+
+    @Test
+    public void joinFail() {
+        CreateGameRequest req = new CreateGameRequest("beans");
+        facade.newGame(req);
+        try {
+            JoinRequest req1 = new JoinRequest("White", 8);
+            GameData game = facade.joinGame(req1);
+            assertTrue(Objects.equals(game.whiteUsername(), "existingUser"));
+        } catch (Exception e) {
+            String[] parts = e.getMessage().split(":");
+            String code = parts[parts.length - 1].trim();
+            assertTrue(code.equals("400"));
+        }
+    }
+
+    @Test
+    public void deleteSuccess(){
+        try{
+        facade.delete();
+        assertEquals(0,0);
+        } catch (Exception e) {
+            assertEquals(0, 1);
+        }
+    }
+
+    @Test
+    public void printBoardSuccess(){
+        ChessBoard board = new ChessBoard();
+        board.resetBoard();
+        PrintBoard printer = new PrintBoard(board, "white");
+        String result = printer.print();
+        System.out.print(result);
+    }
 
 }

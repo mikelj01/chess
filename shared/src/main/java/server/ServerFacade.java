@@ -30,7 +30,7 @@ public class ServerFacade {
             authToken = result.authToken();
             return result;
         } catch (Exception e) {
-            throw new RuntimeException("You are already logged in");
+            throw new RuntimeException("You are already registered");
         }
     }
 
@@ -38,6 +38,7 @@ public class ServerFacade {
         try {
             var path = "/session";
             LoginResult result = this.makeRequest("POST", path, req, LoginResult.class);
+            authToken = result.authToken();
             return result;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -54,10 +55,10 @@ public class ServerFacade {
         }
     }
 
-    public GameResult newGame (CreateGameRequest req){
+    public NewGameResult newGame (CreateGameRequest req){
         try {
             var path = "/game";
-            return this.makeRequest("POST", path, req, GameResult.class);
+            return this.makeRequest("POST", path, req, NewGameResult.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -75,7 +76,8 @@ public class ServerFacade {
     public GameData joinGame (JoinRequest req){
         try {
             var path = "/game";
-            return this.makeRequest("PUT", path, req, GameData.class);
+            GameData result = this.makeRequest("PUT", path, req, GameData.class);
+            return result;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
