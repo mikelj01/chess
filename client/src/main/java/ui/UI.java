@@ -150,7 +150,19 @@ public class UI {
             GameList games = server.getGames();
             String result = "";
             for(GameResult game : games.games()){
-                result += game.gameID() + ". " + game.gameName() + "\n";
+                String players = ", W:: ";
+                if(game.whiteUsername() != null){
+                    players += game.whiteUsername();
+                }else{
+                    players += "<empty seat> ";
+                }
+                players += " B:: ";
+                if(game.blackUsername() != null){
+                    players += game.blackUsername();
+                }else{
+                    players += "<empty seat> ";
+                }
+                result += game.gameID() +  ". " + game.gameName() + players +"\n";
             }
             if(result.equals("")){
                 result = "There are no games.";
