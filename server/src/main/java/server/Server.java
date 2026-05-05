@@ -44,6 +44,11 @@ public class Server {
             javalin.post("/game", this::newGame);
             javalin.put("/game", this::joinGame);
             javalin.delete("/db", this::deleteDB);
+            javalin.ws("/ws", ws -> {
+                ws.onConnect(ws);
+                ws.onMessage(ws);
+                ws.onClose(ws);
+            });
             // Register your endpoints and exception handlers here.
         } catch (Exception e) {
             throw new RuntimeException(e);

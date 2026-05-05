@@ -56,7 +56,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void connect(int id, Session session, String username) throws IOException {
         ConnectionManager connection = connections.get(id);
         connection.add(session);
-        Notification message = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has joined")
+        Notification message = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has joined");
         connection.broadcast(session,message);
     }
 

@@ -79,6 +79,16 @@ public class UI {
                 GameData game = server.joinGame(req);
                 PrintBoard board = new PrintBoard(game.game().getBoard(), params[1]);
                 String result = board.print();
+
+                //getting ws connection
+                String auth = server.authToken;
+                if(game.blackUsername() == userName){
+                    socket.connect(auth, "BLACK", game.gameID());
+                } else if (game.whiteUsername() == userName) {
+                    socket.connect(auth, "WHITE", game.gameID());
+                }
+
+
                 return result;
             } catch (NumberFormatException e) {
                 return "Not a valid game ID";
