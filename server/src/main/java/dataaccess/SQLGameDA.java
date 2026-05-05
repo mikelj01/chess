@@ -45,6 +45,26 @@ public class SQLGameDA implements GameDataAccess{
         }
     }
 
+    public GameData getGame(int id) throws DataAccessException {
+        GameData game = null;
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT id, gameData FROM games WHERE id=?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        game = readGame(rs);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+        return game;
+    }
+
+
+
     @Override
     public GameData joinGame(String color, int gameID, AuthData auth) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
@@ -56,16 +76,16 @@ public class SQLGameDA implements GameDataAccess{
             if(!ids.contains(gameID)){
                 throw new UserException("Error: bad request");
             }
-            GameData game = null;
+            GameData game = getGame(gameID);
             var statement = "SELECT id, gameData FROM games WHERE id=?";
-            try (PreparedStatement ps = conn.prepareStatement(statement)) {
-                ps.setInt(1, gameID);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                         game = readGame(rs);
-                    }
-                }
-            }
+//            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+//                ps.setInt(1, gameID);
+//                try (ResultSet rs = ps.executeQuery()) {
+//                    if (rs.next()) {
+//                         game = readGame(rs);
+//                    }
+//                }
+            //}
             if(Objects.equals(color, "WHITE")  && game != null){
                 if(game.whiteUsername() != null){
                     throw new JoinException("Error: That seat is already taken");
@@ -76,7 +96,6 @@ public class SQLGameDA implements GameDataAccess{
                 executeUpdate(statement, gameData, newGame.gameID());
                 return newGame;
             }
-
             if(Objects.equals(color, "BLACK") && game != null){
                 if(game.blackUsername() != null){
                     throw new JoinException("Error: That seat is already taken");
@@ -115,6 +134,8 @@ public class SQLGameDA implements GameDataAccess{
         }
         return result;
     }
+
+
 
     @Override
     public void clear() throws DataAccessException {

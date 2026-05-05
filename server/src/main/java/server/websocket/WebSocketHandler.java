@@ -4,15 +4,17 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
-import dataaccess.SQLAuthDA;
+import dataaccess.*;
 import io.javalin.websocket.WsCloseContext;
 import io.javalin.websocket.WsCloseHandler;
 import io.javalin.websocket.WsConnectContext;
 import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
+import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
+import service.AuthException;
 import websocket.commands.*;
 import websocket.messages.Notification;
 import websocket.messages.ServerMessage;
@@ -24,9 +26,11 @@ import java.util.HashMap;
 import static websocket.commands.UserGameCommand.CommandType.*;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
-    SQLAuthDA authDB;
-    public WebSocketHandler(SQLAuthDA adb){
+    AuthDataAccess authDB;
+    GameDataAccess gameDB;
+    public WebSocketHandler(AuthDataAccess adb, GameDataAccess gameDB){
         this.authDB = adb;
+        this.gameDB = gameDB;
     }
     private final HashMap<Integer, ConnectionManager> connections = new HashMap<>();
 
@@ -46,7 +50,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 //                case LEAVE -> leave('Game', ctx.session);
 //                case RESIGN -> resign('Game', ctx.session);
             }
-        } catch (IOException ex) {
+        } catch (IOException | DBException | DataAccessException ex) {
             ex.printStackTrace();
         }
     }
@@ -57,13 +61,22 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
 
-    private void connect(int id, Session session, String auth) throws IOException {
+    private void connect(int id, Session session, String auth) throws IOException, DBException, DataAccessException {
         ConnectionManager connection = connections.get(id);
-
         //get auth and match
-        connection.add(session);
-        Notification message = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has joined");
-        connection.broadcast(session,message);
+        AuthData authorization = authDB.getAuth(auth);
+        if(authorization != null) {
+            connection.add(session);
+            Notification message = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, authorization.username() + " has joined");
+            connection.broadcast(session, message);
+            sendGame(gameDB.getGame(id), session);
+        }else{
+            throw new AuthException("Error, not authorized");
+        }
+    }
+
+    private void sendGame(GameData game, Session session) throws IOException {
+        session.getRemote().sendString(new Gson().toJson(game));
     }
 
 //    private void move(GameData gameDat, ChessMove move) {

@@ -27,6 +27,11 @@ public class MemGameDA implements GameDataAccess {
         return game;
     }
 
+    public GameData getGame(int id) throws DataAccessException{
+        GameData game = games.get(id);
+        return game;
+    }
+
     @Override
     public GameData joinGame(String color, int gameID, AuthData auth) throws DataAccessException {
 

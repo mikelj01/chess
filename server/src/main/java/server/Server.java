@@ -29,7 +29,7 @@ public class Server {
             this.userDB = new SQLUserDA();
             this.gameDB = new SQLGameDA();
             this.authDB = new SQLAuthDA();
-            this.wsocket = new WebSocketHandler(authDB);
+            this.wsocket = new WebSocketHandler(authDB, gameDB);
 
 
             this.aServe = new AuthService(authDB);

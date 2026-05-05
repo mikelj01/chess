@@ -10,6 +10,8 @@ public interface GameDataAccess {
 
     GameData createGame(GameData game) throws DataAccessException;
 
+    public GameData getGame(int id) throws DataAccessException;
+
     GameData joinGame(String color, int gameID, AuthData auth) throws DataAccessException;
 
     ArrayList<GameData> listGames() throws DataAccessException;
