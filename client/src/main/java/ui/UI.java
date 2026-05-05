@@ -81,7 +81,7 @@ public class UI {
                 String result = board.print();
 
                 //getting ws connection
-                String auth = server.authToken;
+                model.AuthData auth =  new AuthData(server.authToken, userName);
                 if(game.blackUsername() == userName){
                     socket.connect(auth, "BLACK", game.gameID());
                 } else if (game.whiteUsername() == userName) {

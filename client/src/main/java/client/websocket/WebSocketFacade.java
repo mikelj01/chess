@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 
 
 import jakarta.websocket.*;
+import model.AuthData;
 import model.ResponseException;
 import ui.UI;
 import websocket.commands.ConnectCommand;
@@ -44,7 +45,7 @@ public class WebSocketFacade extends Endpoint {
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
+            throw new ResponseException(500, ex.getMessage());
         }
     }
 
@@ -53,9 +54,9 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void connect(String auth, String color, int id) throws ResponseException {
+    public void connect(AuthData auth, String color, int id) throws ResponseException {
         try {
-            var command = new ConnectCommand(UserGameCommand.CommandType.CONNECT, color, auth, id);
+            var command = new ConnectCommand(UserGameCommand.CommandType.CONNECT, color, auth.authToken(), id);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new ResponseException(500,ex.getMessage());
