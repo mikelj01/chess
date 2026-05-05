@@ -151,6 +151,7 @@ public class Server {
         NewGameResult result = new NewGameResult(game.gameID());
         ctx.result(new Gson().toJson(result));
         ctx.status(200);
+        wsocket.addGame(game.gameID());
         }catch (UserException e){
             ctx.result(new Gson().toJson(Map.of("message",e.getMessage())));
             ctx.status(400);

@@ -15,7 +15,10 @@ import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import service.AuthException;
+import service.UserException;
 import websocket.commands.*;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadMessage;
 import websocket.messages.Notification;
 import websocket.messages.ServerMessage;
 
@@ -46,7 +49,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             UserGameCommand message = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             switch (message.getCommandType()) {
                 case CONNECT -> connect(message.getGameID(), ctx.session, message.getAuthToken());
-//                case MAKE_MOVE -> move('Game', 'Move', ctx.session);
+                case MAKE_MOVE -> move('Game', 'Move', ctx.session);
 //                case LEAVE -> leave('Game', ctx.session);
 //                case RESIGN -> resign('Game', ctx.session);
             }
@@ -60,36 +63,48 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         System.out.println("Websocket closed");
     }
 
+    public void addGame(int id){
+        ConnectionManager game = new ConnectionManager();
+        connections.put(id, game);
+    }
 
     private void connect(int id, Session session, String auth) throws IOException, DBException, DataAccessException {
-        ConnectionManager connection = connections.get(id);
-        //get auth and match
-        AuthData authorization = authDB.getAuth(auth);
-        if(authorization != null) {
-            connection.add(session);
-            Notification message = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, authorization.username() + " has joined");
-            connection.broadcast(session, message);
-            sendGame(gameDB.getGame(id), session);
-        }else{
-            throw new AuthException("Error, not authorized");
+        try {
+            ConnectionManager connection = connections.get(id);
+            if(connection == null){
+                throw new UserException("Error: Bad Game ID");
+            }
+            //get auth and match
+            AuthData authorization = authDB.getAuth(auth);
+            if (authorization != null) {
+                connection.add(session);
+                Notification message = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, authorization.username() + " has joined");
+                connection.broadcast(session, message);
+                sendGame(gameDB.getGame(id), session);
+            } else {
+                throw new AuthException("Error, not authorized");
+            }
+        } catch (Exception e) {
+            ErrorMessage error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, e.getMessage());
+            session.getRemote().sendString(new Gson().toJson(error));
         }
     }
 
     private void sendGame(GameData game, Session session) throws IOException {
-        session.getRemote().sendString(new Gson().toJson(game));
+        LoadMessage message = new LoadMessage(ServerMessage.ServerMessageType.LOAD_GAME,game);
+        session.getRemote().sendString(new Gson().toJson(message));
     }
 
-//    private void move(GameData gameDat, ChessMove move) {
-//        ChessGame game = gameDat.game();
-//        int id = gameDat.gameID();
-//        ConnectionManager connection = connections.get(id);
-//        try {
-//            game.makeMove(move);
-//            connection.broadcast(session,"notification");
-//        } catch (InvalidMoveException e) {
-//
-//        }
-//    }
+    private void move(int id, ChessMove move, Session session) {
+
+        ConnectionManager connection = connections.get(id);
+        try {
+            game.makeMove(move);
+            connection.broadcast(session,"notification");
+        } catch (InvalidMoveException e) {
+
+        }
+    }
 //
 //    private void leave(GameData game, Session session){
 //        int id = game.gameID();
