@@ -1,8 +1,12 @@
 package ui;
 
 import chess.ChessGame;
+import client.websocket.NotificationHandler;
+import client.websocket.WebSocketFacade;
 import model.*;
 import client.ServerFacade;
+import websocket.messages.ServerMessage;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,9 +18,11 @@ public class UI {
     private String userName;
     private boolean signedIn = false;
     ServerFacade server;
+    WebSocketFacade socket;
 
     public UI(ServerFacade f) {
         this.server = f;
+        socket = new WebSocketFacade(f.getServerURL(), this);
     }
 
     public void run(){

@@ -24,8 +24,6 @@ import static websocket.commands.UserGameCommand.CommandType.*;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
-
-
     private final HashMap<Integer, ConnectionManager> connections = new HashMap<>();
 
     @Override

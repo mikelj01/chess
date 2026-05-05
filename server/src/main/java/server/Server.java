@@ -7,6 +7,7 @@ import io.javalin.*;
 import io.javalin.http.Context;
 import model.*;
 import org.jetbrains.annotations.NotNull;
+import server.websocket.WebSocketHandler;
 import service.*;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class Server {
     GameService gServe;
     AuthDataAccess authDB;
     AuthService aServe;
+    WebSocketHandler ws;
     private final Javalin javalin;
 
     public Server() {
@@ -27,6 +29,7 @@ public class Server {
             this.userDB = new SQLUserDA();
             this.gameDB = new SQLGameDA();
             this.authDB = new SQLAuthDA();
+            this.ws = new WebSocketHandler();
 
 
             this.aServe = new AuthService(authDB);

@@ -21,6 +21,10 @@ public class ServerFacade {
         this.authToken = null;
     }
 
+    public String getServerURL() {
+        return serverURL;
+    }
+
     public LoginResult register (UserData req){
         try {
             var path = "/user";
