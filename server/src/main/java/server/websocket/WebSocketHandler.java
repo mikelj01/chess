@@ -8,10 +8,12 @@ import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
 import org.eclipse.jetty.websocket.api.Session;
-import websocket.messages.ServerMessage;
+import websocket.commands.*;
 
 
 import java.io.IOException;
+
+import static websocket.commands.UserGameCommand.CommandType.*;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
@@ -26,11 +28,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     @Override
     public void handleMessage(WsMessageContext ctx) {
         try {
-            ServerMessage message = new Gson().fromJson(ctx.message(), ServerMessage.class);
+            UserGameCommand message = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             switch (message.getServerMessageType()) {
-                case LOAD_GAME -> load("Game", ctx.session);
-                case ERROR ->;
-                case NOTIFICATION -> notify('notification', ctx.session);
+                case CONNECT -> connect("Game", ctx.session);
+                case MAKE_MOVE -> move('Game', 'Move', ctx.session);
+                case LEAVE -> leave('Game', ctx.session);
+                case RESIGN -> resign('Game', ctx.session);
             }
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -43,11 +46,19 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
 
-    private void load(){
+    private void connect(){
 
     }
 
-    private void notify(){
+    private void move(){
+
+    }
+
+    private void leave(){
+
+    }
+
+    private void resign(){
 
     }
 
