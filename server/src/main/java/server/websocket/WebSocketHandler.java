@@ -13,6 +13,8 @@ import io.javalin.websocket.WsMessageHandler;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.*;
+import websocket.messages.Notification;
+import websocket.messages.ServerMessage;
 
 
 import java.io.IOException;
@@ -37,10 +39,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try {
             UserGameCommand message = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             switch (message.getCommandType()) {
-                case CONNECT -> connect("Game", ctx.session);
-                case MAKE_MOVE -> move('Game', 'Move', ctx.session);
-                case LEAVE -> leave('Game', ctx.session);
-                case RESIGN -> resign('Game', ctx.session);
+                case CONNECT -> connect(message.getGameID(), ctx.session);
+//                case MAKE_MOVE -> move('Game', 'Move', ctx.session);
+//                case LEAVE -> leave('Game', ctx.session);
+//                case RESIGN -> resign('Game', ctx.session);
             }
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -53,35 +55,34 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
 
-    private void connect(GameData game, Session session){
-        int id = game.gameID();
+    private void connect(int id, Session session, String username) throws IOException {
         ConnectionManager connection = connections.get(id);
         connection.add(session);
-        connection.broadcast(session,"notification");
-
+        Notification message = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has joined")
+        connection.broadcast(session,message);
     }
 
-    private void move(GameData gameDat, ChessMove move) {
-        ChessGame game = gameDat.game();
-        int id = gameDat.gameID();
-        ConnectionManager connection = connections.get(id);
-        try {
-            game.makeMove(move);
-            connection.broadcast(session,"notification");
-        } catch (InvalidMoveException e) {
-
-        }
-    }
-
-    private void leave(GameData game, Session session){
-        int id = game.gameID();
-        ConnectionManager connection = connections.get(id);
-        connection.remove(session);
-        connection.broadcast(session,"notification");
-    }
-
-    private void resign(){
-
-    }
+//    private void move(GameData gameDat, ChessMove move) {
+//        ChessGame game = gameDat.game();
+//        int id = gameDat.gameID();
+//        ConnectionManager connection = connections.get(id);
+//        try {
+//            game.makeMove(move);
+//            connection.broadcast(session,"notification");
+//        } catch (InvalidMoveException e) {
+//
+//        }
+//    }
+//
+//    private void leave(GameData game, Session session){
+//        int id = game.gameID();
+//        ConnectionManager connection = connections.get(id);
+//        connection.remove(session);
+//        connection.broadcast(session,"notification");
+//    }
+//
+//    private void resign(){
+//
+//    }
 
 }

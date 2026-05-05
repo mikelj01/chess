@@ -39,6 +39,10 @@ public class UI {
 
     }
 
+    public void notify(String message){
+        System.out.println(message);
+    }
+
     public String eval(String input){
         try {
             String[] tokens = input.toLowerCase().split(" ");
@@ -88,7 +92,6 @@ public class UI {
         }
         return "You are not signed in";
     }
-
 
     private String register(String... params){
         try {
