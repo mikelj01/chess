@@ -21,7 +21,7 @@ public class Server {
     GameService gServe;
     AuthDataAccess authDB;
     AuthService aServe;
-    WebSocketHandler ws;
+    WebSocketHandler wsocket;
     private final Javalin javalin;
 
     public Server() {
@@ -29,7 +29,7 @@ public class Server {
             this.userDB = new SQLUserDA();
             this.gameDB = new SQLGameDA();
             this.authDB = new SQLAuthDA();
-            this.ws = new WebSocketHandler();
+            this.wsocket = new WebSocketHandler(authDB);
 
 
             this.aServe = new AuthService(authDB);
@@ -45,9 +45,9 @@ public class Server {
             javalin.put("/game", this::joinGame);
             javalin.delete("/db", this::deleteDB);
             javalin.ws("/ws", ws -> {
-                ws.onConnect(ws);
-                ws.onMessage(ws);
-                ws.onClose(ws);
+                ws.onConnect(wsocket);
+                ws.onMessage(wsocket);
+                ws.onClose(wsocket);
             });
             // Register your endpoints and exception handlers here.
         } catch (Exception e) {

@@ -4,6 +4,7 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
+import dataaccess.SQLAuthDA;
 import io.javalin.websocket.WsCloseContext;
 import io.javalin.websocket.WsCloseHandler;
 import io.javalin.websocket.WsConnectContext;
@@ -23,7 +24,10 @@ import java.util.HashMap;
 import static websocket.commands.UserGameCommand.CommandType.*;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
-
+    SQLAuthDA authDB;
+    public WebSocketHandler(SQLAuthDA adb){
+        this.authDB = adb;
+    }
     private final HashMap<Integer, ConnectionManager> connections = new HashMap<>();
 
     @Override
@@ -37,7 +41,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try {
             UserGameCommand message = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             switch (message.getCommandType()) {
-                case CONNECT -> connect(message.getGameID(), ctx.session);
+                case CONNECT -> connect(message.getGameID(), ctx.session, message.getAuthToken());
 //                case MAKE_MOVE -> move('Game', 'Move', ctx.session);
 //                case LEAVE -> leave('Game', ctx.session);
 //                case RESIGN -> resign('Game', ctx.session);
@@ -55,8 +59,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void connect(int id, Session session, String auth) throws IOException {
         ConnectionManager connection = connections.get(id);
-        connection.add(session);
 
+        //get auth and match
+        connection.add(session);
         Notification message = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username + " has joined");
         connection.broadcast(session,message);
     }
