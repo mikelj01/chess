@@ -135,8 +135,6 @@ public class SQLGameDA implements GameDataAccess{
         return result;
     }
 
-
-
     @Override
     public void clear() throws DataAccessException {
         try {
@@ -152,6 +150,7 @@ public class SQLGameDA implements GameDataAccess{
         GameData game = new Gson().fromJson(json, GameData.class);
         return game;
     }
+
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             if(statement == null){

@@ -20,6 +20,7 @@ public class UserGameCommand {
         this.commandType = commandType;
         this.authToken = authToken;
         this.gameID = gameID;
+
     }
 
     public enum CommandType {
