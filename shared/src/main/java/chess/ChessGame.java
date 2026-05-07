@@ -14,6 +14,7 @@ public class ChessGame {
     ChessBoard board;
     boolean inCheckW;
     boolean inCheckB;
+    public boolean gameOver;
 
     public ChessGame() {
         this.tTurn = TeamColor.WHITE;
@@ -21,8 +22,8 @@ public class ChessGame {
         this.inCheckW = false;
         this.inCheckB = false;
         board.resetBoard();
+        this.gameOver = false;
     }
-
 
     /**
      * @return Which team's turn it is

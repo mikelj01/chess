@@ -16,7 +16,7 @@ public class ErrorHandler implements NotificationHandler{
         }
     }
     public void sendNotification(ErrorMessage message){
-        String notific = message.message;
+        String notific = message.errorMessage;
         ui.notify(notific);
     }
 

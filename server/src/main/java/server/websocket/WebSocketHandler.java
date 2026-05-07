@@ -28,6 +28,8 @@ import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.InvalidPropertiesFormatException;
+import java.util.Objects;
 
 import static websocket.commands.UserGameCommand.CommandType.*;
 
@@ -53,8 +55,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             switch (message.getCommandType()) {
                 case CONNECT -> connect(message.getGameID(), ctx.session, message.getAuthToken(), message);
                 case MAKE_MOVE -> move(message.getGameID(), ctx.message(), message.getAuthToken(), ctx.session);
-//                case LEAVE -> leave('Game', ctx.session);
-//                case RESIGN -> resign('Game', ctx.session);
+                case LEAVE -> leave(message.getGameID(), ctx.message(), message.getAuthToken(), ctx.session);
+                case RESIGN -> resign(message.getGameID(), ctx.message(), message.getAuthToken(), ctx.session);
             }
         } catch (IOException | DBException | DataAccessException ex) {
             ex.printStackTrace();
@@ -116,37 +118,57 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             String bkUser = gameDat.blackUsername();
             String wtUser = gameDat.whiteUsername();
             try {
+                if(game.gameOver){
+                    throw new InvalidMoveException("Game Over");
+                }
+
                 GameData newGame = gameDat;
                 if(userName != null && userName.equals(wtUser)) {
-                    if (board.getPiece(move.getStartPosition()).getTeamColor() == ChessGame.TeamColor.WHITE){
-                        game.makeMove(move);
-                        gameDB.deleteGame(id);
-                        newGame = gameDB.createGame(gameDat);
-                        connection.broadcast(null, new LoadMessage(ServerMessage.ServerMessageType.LOAD_GAME, newGame), newGame);
-                        connection.broadcast(session, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Made a move"), userName + " Made a move" + move);
-                        if(newGame.game().isInCheckmate(ChessGame.TeamColor.BLACK)){
-                            connection.broadcast(null, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Made a move"), userName + " Wins!");
-                        }
+                    if(game.getTeamTurn() != ChessGame.TeamColor.WHITE){
+                        throw new InvalidMoveException("Not your turn");
                     }
+                    if (board.getPiece(move.getStartPosition()).getTeamColor() != ChessGame.TeamColor.WHITE){
+                        throw new InvalidMoveException("You can't move that");
+                    }
+                    game.makeMove(move);
+                    if(game.isInCheckmate(ChessGame.TeamColor.BLACK)){
+                        connection.broadcast(null, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Wins!"), userName + " Wins!");
+                        game.gameOver = true;
+                    }
+                    else if(game.isInCheckmate(ChessGame.TeamColor.WHITE)){
+                        throw new InvalidMoveException("You lost Bucko");
+                    }
+                    gameDB.deleteGame(id);
+                    newGame = gameDB.createGame(gameDat);
+                    connection.broadcast(null, new LoadMessage(ServerMessage.ServerMessageType.LOAD_GAME, newGame), newGame);
+                    connection.broadcast(session, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Made a move"), userName + " Made a move" + move);
+
+
                 } else if (userName != null && userName.equals(bkUser)) {
-                    if (board.getPiece(move.getStartPosition()).getTeamColor() == ChessGame.TeamColor.BLACK){
-                        game.makeMove(move);
-                        gameDB.deleteGame(id);
-                        newGame = gameDB.createGame(gameDat);
-                        connection.broadcast(null, new LoadMessage(ServerMessage.ServerMessageType.LOAD_GAME, newGame), newGame);
-                        connection.broadcast(session, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Made a move"), userName + " Made a move" + move);
-                        if(newGame.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
-                            connection.broadcast(null, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Made a move"), userName + " Wins!");
-                        }
+                    if(game.getTeamTurn() != ChessGame.TeamColor.BLACK){
+                        throw new InvalidMoveException("Not your turn");
                     }
+                    ChessGame.TeamColor pColor = board.getPiece(move.getStartPosition()).getTeamColor();
+                    if (pColor != ChessGame.TeamColor.BLACK) {
+                        throw new InvalidMoveException("You can't move that");
+                    }
+                    game.makeMove(move);
+                    if(game.isInCheckmate(ChessGame.TeamColor.WHITE)){
+                        connection.broadcast(null, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Wins!"), userName + " Wins!");
+                        game.gameOver = true;
+                    }
+                    else if(game.isInCheckmate(ChessGame.TeamColor.BLACK)){
+                        throw new InvalidMoveException("You lost Bucko");
+                    }
+                    gameDB.deleteGame(id);
+                    newGame = gameDB.createGame(gameDat);
+                    connection.broadcast(null, new LoadMessage(ServerMessage.ServerMessageType.LOAD_GAME, newGame), newGame);
+                    connection.broadcast(session, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Made a move"), userName + " Made a move" + move);
                 } else{
                     throw new InvalidMoveException("You Can't Move That");
                 }
-
-
             } catch (InvalidMoveException e) {
-                if()
-                String msg = new Gson().toJson(new ErrorMessage(ServerMessage.ServerMessageType.ERROR, userName + " is a cheaty McCheatyface"));
+                String msg = new Gson().toJson(new ErrorMessage(ServerMessage.ServerMessageType.ERROR, e.getMessage()));
                 session.getRemote().sendString(msg);
                 //connection.broadcast(null, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, msg), msg);
             }
@@ -161,16 +183,73 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
 
 
-//
-//    private void leave(GameData game, Session session){
-//        int id = game.gameID();
-//        ConnectionManager connection = connections.get(id);
-//        connection.remove(session);
-//        connection.broadcast(session,"notification");
-//    }
-//
-//    private void resign(){
-//
-//    }
+
+    private void leave(int id, String message, String authToken, Session session){
+        try {
+            ConnectionManager connection = connections.get(id);
+            connection.remove(session);
+            String userName = "";
+            AuthData auth = authDB.getAuth(authToken);
+            if (auth != null) {
+                userName = auth.username();
+            } else {
+                throw new AuthException("Error: Unauthorized");
+            }
+            GameData gameDat = gameDB.getGame(id);
+            String bkUser = gameDat.blackUsername();
+            String wtUser = gameDat.whiteUsername();
+            if(Objects.equals(userName, bkUser)){
+                GameData newGame = new GameData(id, gameDat.whiteUsername(), null, gameDat.gameName(), gameDat.game());
+                gameDB.deleteGame(id);
+                gameDB.createGame(newGame);
+                connection.remove(session);
+            } else if (Objects.equals(userName, wtUser)) {
+                GameData newGame = new GameData(id, null, gameDat.blackUsername(), gameDat.gameName(), gameDat.game());
+                gameDB.deleteGame(id);
+                gameDB.createGame(newGame);
+                connection.remove(session);
+            }else{
+                connection.remove(session);
+            }
+            connection.broadcast(session, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Left the Game"), userName + " Left the Game");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void resign(int id, String message, String authToken, Session session) throws DBException, DataAccessException, IOException {
+        try{
+
+        ConnectionManager connection = connections.get(id);
+        String userName = "";
+        AuthData auth = authDB.getAuth(authToken);
+        if(auth != null){
+            userName = auth.username();
+        }else{
+            throw new AuthException("Error: Unauthorized");
+        }
+        GameData gameDat = gameDB.getGame(id);
+        String bkUser = gameDat.blackUsername();
+        String wtUser = gameDat.whiteUsername();
+        if(gameDat.game().gameOver){
+            throw new InvalidMoveException("Game Over");
+        }
+        if(Objects.equals(userName, bkUser)){
+            gameDat.game().gameOver = true;
+            gameDB.deleteGame(id);
+            gameDB.createGame(gameDat);
+        } else if (Objects.equals(userName, wtUser)) {
+            gameDat.game().gameOver = true;
+            gameDB.deleteGame(id);
+            gameDB.createGame(gameDat);
+        }else{
+            throw new UserException("You are not Authorized");
+        }
+        connection.broadcast(null, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Resigned"), userName + " Resigned");
+    } catch (Exception e) {
+            String msg = new Gson().toJson(new ErrorMessage(ServerMessage.ServerMessageType.ERROR, e.getMessage()));
+            session.getRemote().sendString(msg);
+        }
+    }
 
 }
