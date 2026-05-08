@@ -255,6 +255,12 @@ public class UI {
     return result;
     }
 
+    private String legMoves(String... params){
+        String result = "";
+
+        return result;
+    }
+
     public String getuserName() {
         return userName;
     }

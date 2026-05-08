@@ -14,6 +14,7 @@ import ui.PrintBoard;
 import ui.UI;
 import websocket.commands.ConnectCommand;
 import websocket.commands.LeaveCommand;
+import websocket.commands.MoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadMessage;
@@ -100,8 +101,13 @@ public class WebSocketFacade extends Endpoint {
         ui.doBoard(game);
     }
 
-    public void makeMove(  ){
-
+    public void makeMove(int id, ChessMove move, AuthData auth){
+        try {
+            var command = new MoveCommand(UserGameCommand.CommandType.MAKE_MOVE, auth.authToken(), id, move);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (IOException ex) {
+            throw new ResponseException(500,ex.getMessage());
+        }
     }
 
     public void leave(AuthData auth, int id){
