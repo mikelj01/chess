@@ -120,8 +120,14 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void resign(){
-
+    public void resign(int id, String authtoken){
+        try {
+            var command = new LeaveCommand(UserGameCommand.CommandType.RESIGN, authtoken, id);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+            games.remove(id);
+        } catch (IOException ex) {
+            throw new ResponseException(500,ex.getMessage());
+        }
     }
 
     public void highlight(int id, ChessPosition position){
@@ -195,8 +201,8 @@ public class WebSocketFacade extends Endpoint {
                     To create redraw the board, please enter: redraw <game id>
                     To highlight legal moves, please enter: highlight <position of the piece you want to move>
                     To make a move, please enter: <start position> <end position>
-                    To resign, please enter: resign
-                    To leave, please enter: leave
+                    To resign, please enter: resign <game id>
+                    To leave, please enter: leave <game id>
                     To see this message again, enter: help
                     """);
     }

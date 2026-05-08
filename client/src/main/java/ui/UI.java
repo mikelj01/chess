@@ -21,6 +21,8 @@ public class UI {
     ServerFacade server;
     WebSocketFacade socket;
     private String color = "";
+    private boolean resigning = false;
+    private int resignId;
 
     public UI(ServerFacade f) {
         this.server = f;
@@ -69,6 +71,9 @@ public class UI {
                 case "join" -> joinGame(params);
                 case "quit" -> "quit";
                 case "move" -> move(params);
+                case "resign" -> resign(params);
+                case "yes" -> confirmRes();
+                case "no" -> denyRes();
                 default -> help();
             });
         } catch (Exception e) {
@@ -77,6 +82,9 @@ public class UI {
     }
 
     private String joinGame(String... params) throws Exception {
+        if(resigning){
+            return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
+        }
         if(signedIn){
             String gameID = params[0];
             try {
@@ -118,6 +126,9 @@ public class UI {
     }
 
     private String register(String... params){
+        if(resigning){
+            return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
+        }
         try {
             if(params.length != 3){
                 return "Expected <USERNAME> <PASSWORD> <EMAIL>";
@@ -133,6 +144,9 @@ public class UI {
     }
 
     private String observeGame(String... params) {
+        if(resigning){
+            return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
+        }
         if(!signedIn){
             return "You are not Signed in";
         }
@@ -151,20 +165,19 @@ public class UI {
             return "Invalid game ID";
         }
         if(nums.contains(iD)){
-            for(GameResult game : games.games()){
-                if(game.gameID() == iD) {
-                    ChessGame myGame = new ChessGame();
-                    PrintBoard board = new PrintBoard(myGame.getBoard(), "white");
-                    String result = board.print();
-                    return result;
-                }
-            }
+            JoinRequest req = new JoinRequest(params[1], iD);
+            //getting ws connection
+            model.AuthData auth =  new AuthData(server.authToken, userName);
+            socket.connect(auth, "Observer", iD);
 
         }
         return "Invalid input";
     }  //(Get valid gamenumber and return board)
 
     private String logOut() throws Exception {
+        if(resigning){
+            return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
+        }
         if(signedIn){
             server.logout(userName);
             signedIn = false;
@@ -201,6 +214,9 @@ public class UI {
     }
 
     private String createGame(String... params) {
+        if(resigning){
+            return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
+        }
         if(signedIn) {
             CreateGameRequest req = new CreateGameRequest(params[0]);
             server.newGame(req);
@@ -210,6 +226,9 @@ public class UI {
     }
 
     private String logIn(String... params) throws Exception {
+        if(resigning){
+            return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
+        }
         if (params.length == 2) {
             try {
                 userName = params[0];
@@ -232,30 +251,65 @@ public class UI {
     }
 
     private String move(String... params){
+        if(resigning){
+            return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
+        }
         String result = "";
 
         return result;
     }
 
     private String leave(String... params){
+        if(resigning){
+            return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
+        }
         String result = "";
-
+        
         return result;
+
     }
 
     private String resign(String... params){
-        String result = "";
-
+        if(resigning){
+            return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
+        }
+        String result = "Are you Sure you want to resign?";
+        resigning = true;
+        resignId = Integer.parseInt(params[0]);
         return result;
+    }
+    
+    private String confirmRes(){
+        String result = "";
+        if(resigning){
+            socket.resign(resignId, server.authToken);
+            resigning = false;
+            result = "Resignation successful";
+        }
+        return result;
+    }
+    
+    private String denyRes(){
+        if(resigning){
+            resigning = false;
+            return "Resignation Cancelled";
+        }
+        return "";
     }
 
     private String reDraw(String... params){
+        if(resigning){
+            return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
+        }
     String result = "";
 
     return result;
     }
 
     private String legMoves(String... params){
+        if(resigning){
+            return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
+        }
         String result = "";
 
         return result;
@@ -272,6 +326,9 @@ public class UI {
     }
 
     public String help(){
+        if(resigning){
+            return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
+        }
         if(!signedIn){
             return """
                     Please enter the command that corresponds with what you want to do.
