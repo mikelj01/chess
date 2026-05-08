@@ -117,6 +117,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             }else{
                 throw new AuthException("Error: Unauthorized");
             }
+
+            if(board.getPiece(move.getStartPosition())==null){
+                throw new InvalidMoveException("There's no piece there");
+            }
+
             String bkUser = gameDat.blackUsername();
             String wtUser = gameDat.whiteUsername();
             try {
@@ -139,6 +144,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     }
                     else if(game.isInCheckmate(ChessGame.TeamColor.WHITE)){
                         throw new InvalidMoveException("You lost Bucko");
+                    }
+                    if(game.isInCheck(ChessGame.TeamColor.BLACK)) {
+                        connection.broadcast(null, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, "Black is in Check!"),  "Black is in check!");
+                    }
+                    if(game.isInCheck(ChessGame.TeamColor.WHITE)) {
+                        connection.broadcast(null, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, "White is in Check!"),  "White is in check!");
                     }
                     gameDB.deleteGame(id);
                     newGame = gameDB.createGame(gameDat);
