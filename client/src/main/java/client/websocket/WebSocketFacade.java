@@ -207,7 +207,7 @@ public class WebSocketFacade extends Endpoint {
         ui.notify("""
                     Please enter the command that corresponds with what you want to do.
                     To create redraw the board, please enter: redraw <game id>
-                    To highlight legal moves, please enter: highlight <position of the piece you want to move>
+                    To highlight legal moves, please enter: highlight <game id> <position of the piece you want to move>
                     To make a move, please enter: <game id> <start position> <end position> <promotion piece> 
                             (example of promotion: 7,8 8,8 knight)
                             If you are not promoting, leave it empty, ex:1,1 2,2)

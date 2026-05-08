@@ -80,6 +80,7 @@ public class UI {
                 case "leave" -> leave(params);
                 case "redraw" -> reDraw(params);
                 case "game" -> gamehelp();
+                case "highlight" -> legMoves(params);
                 default -> help();
             });
         } catch (Exception e) {
@@ -352,7 +353,11 @@ public class UI {
             return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
         }
         String result = "";
-
+        String param1 = params[1];
+        int sPRow = Integer.parseInt(param1.substring(0,1));
+        int sPCol = Integer.parseInt(param1.substring(param1.length() - 1));
+        ChessPosition sp = new ChessPosition(sPRow, sPCol);
+        socket.highlight(Integer.parseInt(params[0]), sp);
         return result;
     }
 
