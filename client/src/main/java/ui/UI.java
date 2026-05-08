@@ -10,6 +10,7 @@ import websocket.messages.ServerMessage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
 
 
@@ -19,6 +20,7 @@ public class UI {
     private boolean signedIn = false;
     ServerFacade server;
     WebSocketFacade socket;
+    private String color = "";
 
     public UI(ServerFacade f) {
         this.server = f;
@@ -49,12 +51,15 @@ public class UI {
         System.out.println(message);
     }
 
+
+
+
     public String eval(String input){
         try {
             String[] tokens = input.toLowerCase().split(" ");
             String cmd = (tokens.length > 0) ? tokens[0] : "help";
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            return switch (cmd) {
+            return String.valueOf(switch (cmd) {
                 case "login" -> logIn(params);
                 case "register" -> register(params);
                 case "create" -> createGame(params);
@@ -63,8 +68,9 @@ public class UI {
                 case "observe" -> observeGame(params);
                 case "join" -> joinGame(params);
                 case "quit" -> "quit";
+                case "move" -> move(params);
                 default -> help();
-            };
+            });
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -77,17 +83,19 @@ public class UI {
                 int iD= Integer.parseInt(gameID);
                 JoinRequest req = new JoinRequest(params[1], iD);
                 GameData game = server.joinGame(req);
-                PrintBoard board = new PrintBoard(game.game().getBoard(), params[1]);
-                String result = board.print();
+                color = params[1];
 
                 //getting ws connection
                 model.AuthData auth =  new AuthData(server.authToken, userName);
-                if(game.blackUsername() == userName){
+
+                if(Objects.equals(game.blackUsername(), userName)){
                     socket.connect(auth, "BLACK", game.gameID());
-                } else if (game.whiteUsername() == userName) {
+                } else if (Objects.equals(game.whiteUsername(), userName)) {
                     socket.connect(auth, "WHITE", game.gameID());
                 }
-
+                String result = "";
+//                PrintBoard board = new PrintBoard(game.game().getBoard(), params[1]);
+//                result = board.print();
 
                 return result;
             } catch (NumberFormatException e) {
@@ -116,6 +124,7 @@ public class UI {
             }
             UserData req = new UserData(params[0], params[1], params[2]);
             server.register(req);
+            userName = req.username();
             signedIn = true;
             return req.username() + " signed in \n" + help();
         } catch (RuntimeException e) {
@@ -220,6 +229,36 @@ public class UI {
             }
         }
         throw new Exception("Expected: <username> <password>");
+    }
+
+    private String move(String... params){
+        String result = "";
+
+        return result;
+    }
+
+    private String leave(String... params){
+        String result = "";
+
+        return result;
+    }
+
+    private String resign(String... params){
+        String result = "";
+
+        return result;
+    }
+
+    private String reDraw(String... params){
+    String result = "";
+
+    return result;
+    }
+
+    public void doBoard(GameData gameDat){
+        PrintBoard board = new PrintBoard(gameDat.game().getBoard(), color);
+        String result = board.print();
+        System.out.print(result);
     }
 
     public String help(){

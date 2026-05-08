@@ -181,9 +181,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-
-
-
     private void leave(int id, String message, String authToken, Session session){
         try {
             ConnectionManager connection = connections.get(id);
