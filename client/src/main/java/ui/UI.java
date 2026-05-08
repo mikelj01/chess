@@ -246,7 +246,6 @@ public class UI {
         throw new Exception("Expected: <username> <password>");
     }
 
-
     public void notify(String message){
         System.out.println(message + "\n");
     }
