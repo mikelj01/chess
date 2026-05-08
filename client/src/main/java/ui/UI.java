@@ -20,9 +20,7 @@ public class UI {
     private boolean signedIn = false;
     ServerFacade server;
     WebSocketFacade socket;
-
     private boolean resigning = false;
-    private int resignId;
 
     public UI(ServerFacade f) {
         this.server = f;
@@ -48,11 +46,6 @@ public class UI {
         }
 
     }
-
-    public void notify(String message){
-        System.out.println(message + "\n");
-    }
-
 
 
 
@@ -253,16 +246,21 @@ public class UI {
         throw new Exception("Expected: <username> <password>");
     }
 
+
+    public void notify(String message){
+        System.out.println(message + "\n");
+    }
+
     private String move(String... params){
         if(resigning){
             return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
         }
-        if(params.length < 3){
+        if(params.length < 2){
             return "please enter <game id> <start position> <end position>";
         }
         try {
-            String param1 = params[1];
-            String param2 = params[2];
+            String param1 = params[0];
+            String param2 = params[1];
             int sPRow = Integer.parseInt(param1.substring(0, 1));
             int sPCol = Integer.parseInt(param1.substring(param1.length() - 1));
 
@@ -273,8 +271,8 @@ public class UI {
             ChessPosition ep = new ChessPosition(ePRow, ePCol);
             ChessPiece.PieceType pp = null;
 
-            if (params.length > 3) {
-                String type = params[3].toUpperCase();
+            if (params.length > 2) {
+                String type = params[2].toUpperCase();
                 if (type.equals("QUEEN")) {
                     pp = ChessPiece.PieceType.QUEEN;
                 } else if (type.equals("ROOK")) {
@@ -288,11 +286,7 @@ public class UI {
                 }
             }
             ChessMove move = new ChessMove(sp, ep, pp);
-            int id = Integer.parseInt(params[0]);
-//            if (!socket.checkConnection(id)) {
-//                return "please enter a game id that you are playing in.";
-//            }
-            socket.makeMove(id, move, new AuthData(server.authToken, userName));
+            socket.makeMove(move, new AuthData(server.authToken, userName));
             String result = "";
             return result;
         }catch (NumberFormatException e){
@@ -305,29 +299,12 @@ public class UI {
             if (resigning) {
                 return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
             }
-
-            GameList games = server.getGames();
-            ArrayList<Integer> nums = new ArrayList<>();
-            for(GameResult game : games.games()){
-                nums.add(game.gameID());
-            }
-            int iD;
-            try {
-                iD = Integer.parseInt(params[0]);
-            } catch (NumberFormatException e) {
-                return "Invalid game ID";
-            }
-            if(nums.contains(iD)) {
-
-                socket.leave(new AuthData(server.authToken, userName), Integer.parseInt(params[0]));
+                socket.leave(new AuthData(server.authToken, userName));
                 String result = "";
                 return result;
-            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return "Invalid input";
-
     }
 
     private String resign(String... params){
@@ -337,7 +314,6 @@ public class UI {
         String result = "Are you Sure you want to resign?";
         resigning = true;
         try {
-            resignId = Integer.parseInt(params[0]);
             return result;
         } catch (NumberFormatException e) {
             return "Please enter a valid game id";
@@ -347,7 +323,7 @@ public class UI {
     private String confirmRes(){
         String result = "";
         if(resigning){
-            socket.resign(resignId, server.authToken);
+            socket.resign(server.authToken);
             resigning = false;
             result = "Resignation successful";
         }
@@ -390,11 +366,11 @@ public class UI {
             return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
         }
         String result = "";
-        String param1 = params[1];
+        String param1 = params[0];
         int sPRow = Integer.parseInt(param1.substring(0,1));
         int sPCol = Integer.parseInt(param1.substring(param1.length() - 1));
         ChessPosition sp = new ChessPosition(sPRow, sPCol);
-        socket.highlight(Integer.parseInt(params[0]), sp);
+        socket.highlight(sp);
         return result;
     }
 

@@ -106,28 +106,18 @@ public class WebSocketFacade extends Endpoint {
         ui.doBoard(currGame, newBoard);
     }
 
-    public void makeMove(int id, ChessMove move, AuthData auth){
+    public void makeMove(ChessMove move, AuthData auth){
         try {
-            var command = new MoveCommand(UserGameCommand.CommandType.MAKE_MOVE, auth.authToken(), id, move);
+            var command = new MoveCommand(UserGameCommand.CommandType.MAKE_MOVE, auth.authToken(), currGame.gameID(), move);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new ResponseException(500,ex.getMessage());
         }
     }
 
-    public void leave(AuthData auth, int id){
+    public void leave(AuthData auth){
         try {
-            var command = new LeaveCommand(UserGameCommand.CommandType.LEAVE, auth.authToken(), id);
-            this.session.getBasicRemote().sendText(new Gson().toJson(command));
-
-        } catch (IOException ex) {
-            throw new ResponseException(500,ex.getMessage());
-        }
-    }
-
-    public void resign(int id, String authtoken){
-        try {
-            var command = new LeaveCommand(UserGameCommand.CommandType.RESIGN, authtoken, id);
+            var command = new LeaveCommand(UserGameCommand.CommandType.LEAVE, auth.authToken(), currGame.gameID());
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
 
         } catch (IOException ex) {
@@ -135,7 +125,17 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void highlight(int id, ChessPosition position){
+    public void resign(String authtoken){
+        try {
+            var command = new LeaveCommand(UserGameCommand.CommandType.RESIGN, authtoken, currGame.gameID());
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+
+        } catch (IOException ex) {
+            throw new ResponseException(500,ex.getMessage());
+        }
+    }
+
+    public void highlight(ChessPosition position){
         //gets board, username and color
         ChessGame game = currGame.game();
         ChessBoard oldboard = game.getBoard();
@@ -285,14 +285,14 @@ public class WebSocketFacade extends Endpoint {
     public void help(){
         ui.notify("""
                     Please enter the command that corresponds with what you want to do.
-                    To create redraw the board, please enter: redraw <game id>
-                    To highlight legal moves, please enter: highlight <game id> <position of the piece you want to move>
-                    To make a move, please enter: <game id> <start position> <end position> <promotion piece> 
+                    To create redraw the board: redraw
+                    To highlight legal moves: highlight <position of the piece you want to move>
+                    To make a move:  <start position> <end position> <promotion piece> 
                             (example of promotion: 7,8 8,8 knight)
                             If you are not promoting, leave it empty, ex:1,1 2,2)
-                    To resign, please enter: resign <game id>
-                    To leave, please enter: leave <game id>
-                    To see this message again, enter: commands
+                    To resign: resign 
+                    To leave: leave 
+                    To see this message again: commands
                     """);
     }
 }
