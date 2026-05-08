@@ -96,7 +96,7 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void redraw(AuthData auth, int id){
+    public void redraw(int id){
         GameData game = games.get(id);
         ui.doBoard(game);
     }
