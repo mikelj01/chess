@@ -213,7 +213,7 @@ public class WebSocketFacade extends Endpoint {
                             If you are not promoting, leave it empty, ex:1,1 2,2)
                     To resign, please enter: resign <game id>
                     To leave, please enter: leave <game id>
-                    To see this message again, enter: help
+                    To see this message again, enter: commands
                     """);
     }
 }

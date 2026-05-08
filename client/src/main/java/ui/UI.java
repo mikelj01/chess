@@ -79,7 +79,7 @@ public class UI {
                 case "no" -> denyRes();
                 case "leave" -> leave(params);
                 case "redraw" -> reDraw(params);
-                case "game" -> gamehelp();
+                case "commands" -> gamehelp();
                 case "highlight" -> legMoves(params);
                 default -> help();
             });
@@ -172,11 +172,11 @@ public class UI {
             return "Invalid game ID";
         }
         if(nums.contains(iD)){
-            JoinRequest req = new JoinRequest(params[1], iD);
+            JoinRequest req = new JoinRequest(params[0], iD);
             //getting ws connection
             model.AuthData auth =  new AuthData(server.authToken, userName);
             socket.connect(auth, "Observer", iD);
-
+            return "\n";
         }
         return "Invalid input";
     }  //(Get valid gamenumber and return board)
@@ -261,40 +261,47 @@ public class UI {
         if(resigning){
             return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
         }
-        String param1 = params[1];
-        String param2 = params[2];
-        int sPRow = Integer.parseInt(param1.substring(0,1));
-        int sPCol = Integer.parseInt(param1.substring(param1.length() - 1));
+        if(params.length < 3){
+            return "please enter <game id> <start position> <end position>";
+        }
+        try {
+            String param1 = params[1];
+            String param2 = params[2];
+            int sPRow = Integer.parseInt(param1.substring(0, 1));
+            int sPCol = Integer.parseInt(param1.substring(param1.length() - 1));
 
-        int ePRow = Integer.parseInt(param2.substring(0,1));
-        int ePCol = Integer.parseInt(param2.substring(param1.length() - 1));
+            int ePRow = Integer.parseInt(param2.substring(0, 1));
+            int ePCol = Integer.parseInt(param2.substring(param1.length() - 1));
 
-        ChessPosition sp = new ChessPosition(sPRow, sPCol);
-        ChessPosition ep = new ChessPosition(ePRow, ePCol);
-        ChessPiece.PieceType pp = null;
+            ChessPosition sp = new ChessPosition(sPRow, sPCol);
+            ChessPosition ep = new ChessPosition(ePRow, ePCol);
+            ChessPiece.PieceType pp = null;
 
-        if(params.length > 3) {
-            String type = params[3].toUpperCase();
-            if(type.equals("QUEEN")){
-                pp = ChessPiece.PieceType.QUEEN;
-            } else if (type.equals("ROOK")) {
-                pp = ChessPiece.PieceType.ROOK;
-            }else if (type.equals("KNIGHT")) {
-                pp = ChessPiece.PieceType.KNIGHT;
-            }else if (type.equals("BISHOP")) {
-                pp = ChessPiece.PieceType.BISHOP;
-            }else {
-                return "Incorrect promotion type.  please try again.";
+            if (params.length > 3) {
+                String type = params[3].toUpperCase();
+                if (type.equals("QUEEN")) {
+                    pp = ChessPiece.PieceType.QUEEN;
+                } else if (type.equals("ROOK")) {
+                    pp = ChessPiece.PieceType.ROOK;
+                } else if (type.equals("KNIGHT")) {
+                    pp = ChessPiece.PieceType.KNIGHT;
+                } else if (type.equals("BISHOP")) {
+                    pp = ChessPiece.PieceType.BISHOP;
+                } else {
+                    return "Incorrect promotion type.  please try again.";
+                }
             }
+            ChessMove move = new ChessMove(sp, ep, pp);
+            int id = Integer.parseInt(params[0]);
+            if (!socket.checkConnection(id)) {
+                return "please enter a game id that you are playing in.";
+            }
+            socket.makeMove(id, move, new AuthData(server.authToken, userName));
+            String result = "";
+            return result;
+        }catch (NumberFormatException e){
+            return "Please enter <game id> <Start position> <end position>";
         }
-        ChessMove move = new ChessMove(sp, ep, pp);
-        int id = Integer.parseInt(params[0]);
-        if(!socket.checkConnection(id)){
-            return "please enter a game id that you are playing in.";
-        }
-        socket.makeMove(id ,move ,new AuthData(server.authToken, userName) );
-        String result = "";
-        return result;
     }
 
     private String leave(String... params){
@@ -302,12 +309,28 @@ public class UI {
             if (resigning) {
                 return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
             }
-            socket.leave(new AuthData(server.authToken, userName), Integer.parseInt(params[0]));
-            String result = "";
-            return result;
+
+            GameList games = server.getGames();
+            ArrayList<Integer> nums = new ArrayList<>();
+            for(GameResult game : games.games()){
+                nums.add(game.gameID());
+            }
+            int iD;
+            try {
+                iD = Integer.parseInt(params[0]);
+            } catch (NumberFormatException e) {
+                return "Invalid game ID";
+            }
+            if(nums.contains(iD)) {
+
+                socket.leave(new AuthData(server.authToken, userName), Integer.parseInt(params[0]));
+                String result = "";
+                return result;
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        return "Invalid input";
 
     }
 
@@ -317,8 +340,12 @@ public class UI {
         }
         String result = "Are you Sure you want to resign?";
         resigning = true;
-        resignId = Integer.parseInt(params[0]);
-        return result;
+        try {
+            resignId = Integer.parseInt(params[0]);
+            return result;
+        } catch (NumberFormatException e) {
+            return "Please enter a valid game id";
+        }
     }
     
     private String confirmRes(){
@@ -343,9 +370,23 @@ public class UI {
         if(resigning){
             return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
         }
-        String result = "";
-        socket.redraw(Integer.parseInt(params[0]));
-        return result;
+        GameList games = server.getGames();
+        ArrayList<Integer> nums = new ArrayList<>();
+        for(GameResult game : games.games()){
+            nums.add(game.gameID());
+        }
+        int iD;
+        try{
+            iD = Integer.parseInt(params[0]);
+        } catch (NumberFormatException e) {
+            return "Invalid game ID";
+        }
+        if(nums.contains(iD)) {
+            String result = "";
+            socket.redraw(Integer.parseInt(params[0]));
+            return result;
+        }
+        return "invalid input";
     }
 
     private String legMoves(String... params){
@@ -398,7 +439,7 @@ public class UI {
                     To logout: logout
                     To close: quit
                     To list commands again: help
-                    For help with game commands: game
+                    To list game commands: commands
                     
                     """;
         }
