@@ -42,14 +42,15 @@ public class WebSocketFacade extends Endpoint {
 
     Session session;
     UI ui;
-    HashMap<Integer, GameData> games;
+    //HashMap<Integer, GameData> games;
     String userName;
+    GameData currGame;
 
 
     public WebSocketFacade(String url, UI ui) throws ResponseException {
         this.ui = ui;
-        this.games = new HashMap<>();
-        this.userName = ui.getuserName();
+        //this.games = new HashMap<>();
+        this.userName = "";
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
@@ -69,8 +70,10 @@ public class WebSocketFacade extends Endpoint {
                     } else if (type == ServerMessage.ServerMessageType.LOAD_GAME) {
                         LoadMessage payLoad = new Gson().fromJson(message, LoadMessage.class);
                         GameData gameDat = payLoad.game;
-                        games.put(gameDat.gameID(), gameDat);
-                        ui.doBoard(gameDat);
+                        currGame = gameDat;
+                        ChessBoard board = currGame.game().getBoard();
+                        ChessBoard newBoard = new ChessBoard(board);
+                        ui.doBoard(gameDat, newBoard);
                     }else{
                         Notification notif = new Gson().fromJson(message, Notification.class);
                         ui.notify(notif.message);
@@ -98,8 +101,9 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void redraw(int id){
-        GameData game = games.get(id);
-        ui.doBoard(game);
+        ChessBoard board = currGame.game().getBoard();
+        ChessBoard newBoard = new ChessBoard(board);
+        ui.doBoard(currGame, newBoard);
     }
 
     public void makeMove(int id, ChessMove move, AuthData auth){
@@ -111,18 +115,11 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public boolean checkConnection(int id){
-        if(games.get(id) != null){
-            return true;
-        }
-        return false;
-    }
-
     public void leave(AuthData auth, int id){
         try {
             var command = new LeaveCommand(UserGameCommand.CommandType.LEAVE, auth.authToken(), id);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
-            games.remove(id);
+
         } catch (IOException ex) {
             throw new ResponseException(500,ex.getMessage());
         }
@@ -132,19 +129,81 @@ public class WebSocketFacade extends Endpoint {
         try {
             var command = new LeaveCommand(UserGameCommand.CommandType.RESIGN, authtoken, id);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
-            games.remove(id);
+
         } catch (IOException ex) {
             throw new ResponseException(500,ex.getMessage());
         }
     }
 
     public void highlight(int id, ChessPosition position){
-        ChessGame game = games.get(id).game();
-        ChessBoard board = game.getBoard();
+        //gets board, username and color
+        ChessGame game = currGame.game();
+        ChessBoard oldboard = game.getBoard();
+        ChessBoard board = new ChessBoard(oldboard);
+        userName = ui.getuserName();
         ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
-        if(Objects.equals(games.get(id).blackUsername(), userName)){
+        if(Objects.equals(currGame.blackUsername(), userName)){
             color = ChessGame.TeamColor.BLACK;
         }
+
+        //accounting for something that has been broken since the beginning.
+        int posRow = position.getRow();
+        int posCol = position.getColumn();
+        int row = posRow;
+        int col = posCol;
+        if(color == ChessGame.TeamColor.BLACK) {
+            if(posRow == 1){
+                row = 8;
+            }
+            if(posRow == 2){
+                row = 7;
+            }
+            if(posRow == 3){
+                row = 6;
+            }
+            if(posRow == 4){
+                row = 5;
+            }
+            if(posRow == 5){
+                row = 4;
+            }
+            if(posRow == 6){
+                row = 3;
+            }
+            if(posRow == 7){
+                row = 2;
+            }
+            if(posRow == 8){
+                row = 2;
+            }
+            if(posCol == 1){
+                col = 8;
+            }
+            if(posCol == 2){
+                col = 7;
+            }
+            if(posCol == 3){
+                col = 6;
+            }
+            if(posCol == 4){
+                col = 5;
+            }
+            if(posCol == 5){
+                col = 4;
+            }
+            if(posCol == 6){
+                col = 3;
+            }
+            if(posCol == 7){
+                col = 2;
+            }
+            if(posCol == 8){
+                col = 2;
+            }
+        }
+
+        position = new ChessPosition(row, col);
+        //getting legal moves
         Collection<ChessMove> legmoves = game.validMoves(position);
         Collection<ChessPosition> poses = new HashSet<>();
         for(ChessMove move : legmoves){

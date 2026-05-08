@@ -1,9 +1,6 @@
 package ui;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
 import model.*;
@@ -292,9 +289,9 @@ public class UI {
             }
             ChessMove move = new ChessMove(sp, ep, pp);
             int id = Integer.parseInt(params[0]);
-            if (!socket.checkConnection(id)) {
-                return "please enter a game id that you are playing in.";
-            }
+//            if (!socket.checkConnection(id)) {
+//                return "please enter a game id that you are playing in.";
+//            }
             socket.makeMove(id, move, new AuthData(server.authToken, userName));
             String result = "";
             return result;
@@ -405,14 +402,14 @@ public class UI {
         return userName;
     }
 
-    public void doBoard(GameData gameDat){
+    public void doBoard(GameData gameDat, ChessBoard myboard){
         String color = "";
         if (Objects.equals(gameDat.whiteUsername(), userName)) {
             color = "white";
         } else if(Objects.equals(gameDat.blackUsername(), userName)){
             color = "black";
         }
-        PrintBoard board = new PrintBoard(gameDat.game().getBoard(), color);
+        PrintBoard board = new PrintBoard(myboard, color);
         String result = board.print();
         System.out.print(result);
     }
