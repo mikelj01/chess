@@ -11,6 +11,7 @@ import static ui.EscapeSequences.*;
 public class PrintBoard {
     ChessBoard board;
     String color;
+    int rowNum;
 
     public PrintBoard(ChessBoard board, String colr) {
         this.board = board;
@@ -30,11 +31,26 @@ public class PrintBoard {
             }
         }
 
+        if(Objects.equals(color, "black")){
+            rowNum = 1;
+        }else{
+            rowNum = 8;
+        }
+
         String boardText = "";
         for (int i = squares.length - 1; i >= 0; i--) {
+
+            boardText += RESET_TEXT_COLOR;
+            boardText += rowNum + " ";
+            if(Objects.equals(color, "black")){
+                rowNum ++;
+            }else {
+                rowNum--;
+            }
+
             for (ChessPiece piece : squares[i]) {
                 if (piece == null) {
-                    if (toggle == false) {
+                    if (!toggle) {
                         boardText += SET_BG_COLOR_WHITE;
                     } else {
                         boardText +=SET_BG_COLOR_DARK_GREEN;
@@ -61,7 +77,14 @@ public class PrintBoard {
             boardText += "\n";
 
         }
-        boardText += RESET_TEXT_COLOR + RESET_BG_COLOR;
+        boardText += RESET_TEXT_COLOR;
+        if(Objects.equals(color, "black")){
+            boardText += "   8  7  6  5  4  3  2  1  \n";
+        }else{
+            boardText += "   1  2  3  4  5  6  7  8  \n";
+        }
+        boardText += RESET_BG_COLOR;
+
         return boardText;
     }
 }

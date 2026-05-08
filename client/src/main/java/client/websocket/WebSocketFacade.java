@@ -153,7 +153,14 @@ public class WebSocketFacade extends Endpoint {
 
         boolean toggle = false;
         ChessPiece[][] squares = board.getSquares();
-        if (Objects.equals(color, "black")) {
+        int rowNum;
+        if(color == ChessGame.TeamColor.BLACK){
+            rowNum = 1;
+        }else{
+            rowNum = 8;
+        }
+
+        if (color == ChessGame.TeamColor.BLACK) {
             for (int i = 0; i < squares.length ; i++) {
                 for (int j = 0; j < squares[i].length / 2; j++) {
                     ChessPiece temp = squares[i][j];
@@ -166,13 +173,20 @@ public class WebSocketFacade extends Endpoint {
         String boardText = "";
         for (int i = squares.length - 1; i >= 0; i--) {
             int j = 1;
+            boardText += RESET_TEXT_COLOR;
+            boardText += rowNum + " ";
+            if(color == ChessGame.TeamColor.BLACK){
+                rowNum ++;
+            }else {
+                rowNum--;
+            }
             for (ChessPiece piece : squares[i]) {
-                ChessPosition pos = new ChessPosition(i, j);
+                ChessPosition pos = new ChessPosition(i + 1, j);
                 j++;
                 if (piece == null) {
                     if (poses.contains(pos)){
-                        boardText += SET_BG_COLOR_GREEN;
-                    } else if (toggle == false) {
+                        boardText += SET_BG_COLOR_BLUE;
+                    } else if (!toggle) {
                         boardText += SET_BG_COLOR_WHITE;
                     } else {
                         boardText +=SET_BG_COLOR_DARK_GREEN;
@@ -199,7 +213,13 @@ public class WebSocketFacade extends Endpoint {
             boardText += "\n";
 
         }
-        boardText += RESET_TEXT_COLOR + RESET_BG_COLOR;
+        boardText += RESET_TEXT_COLOR;
+        if(color == ChessGame.TeamColor.BLACK){
+            boardText += "   8  7  6  5  4  3  2  1  \n";
+        }else{
+            boardText += "   1  2  3  4  5  6  7  8  \n";
+        }
+        boardText += RESET_BG_COLOR;
         ui.notify(boardText);
     }
 

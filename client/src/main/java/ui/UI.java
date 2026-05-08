@@ -23,7 +23,7 @@ public class UI {
     private boolean signedIn = false;
     ServerFacade server;
     WebSocketFacade socket;
-    private String color = "";
+
     private boolean resigning = false;
     private int resignId;
 
@@ -98,7 +98,6 @@ public class UI {
                 int iD= Integer.parseInt(gameID);
                 JoinRequest req = new JoinRequest(params[1], iD);
                 GameData game = server.joinGame(req);
-                color = params[1];
 
                 //getting ws connection
                 model.AuthData auth =  new AuthData(server.authToken, userName);
@@ -407,6 +406,12 @@ public class UI {
     }
 
     public void doBoard(GameData gameDat){
+        String color = "";
+        if (Objects.equals(gameDat.whiteUsername(), userName)) {
+            color = "white";
+        } else if(Objects.equals(gameDat.blackUsername(), userName)){
+            color = "black";
+        }
         PrintBoard board = new PrintBoard(gameDat.game().getBoard(), color);
         String result = board.print();
         System.out.print(result);
