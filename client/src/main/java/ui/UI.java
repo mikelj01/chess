@@ -48,7 +48,7 @@ public class UI {
     }
 
     public void notify(String message){
-        System.out.println(message);
+        System.out.println(message + "\n");
     }
 
 
@@ -253,6 +253,10 @@ public class UI {
     String result = "";
 
     return result;
+    }
+
+    public String getuserName() {
+        return userName;
     }
 
     public void doBoard(GameData gameDat){
