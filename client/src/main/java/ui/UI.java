@@ -74,6 +74,7 @@ public class UI {
                 case "resign" -> resign(params);
                 case "yes" -> confirmRes();
                 case "no" -> denyRes();
+                case "leave" -> leave();
                 default -> help();
             });
         } catch (Exception e) {
@@ -260,12 +261,16 @@ public class UI {
     }
 
     private String leave(String... params){
-        if(resigning){
-            return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
+        try {
+            if (resigning) {
+                return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
+            }
+            socket.leave(new AuthData(server.authToken, userName), Integer.parseInt(params[0]));
+            String result = "";
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        String result = "";
-        
-        return result;
 
     }
 
