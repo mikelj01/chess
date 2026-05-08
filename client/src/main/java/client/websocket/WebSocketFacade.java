@@ -100,7 +100,7 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void redraw(int id){
+    public void redraw(){
         ChessBoard board = currGame.game().getBoard();
         ChessBoard newBoard = new ChessBoard(board);
         ui.doBoard(currGame, newBoard);

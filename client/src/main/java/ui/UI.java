@@ -255,7 +255,7 @@ public class UI {
             return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
         }
         if(params.length < 2){
-            return "please enter <game id> <start position> <end position>";
+            return "please enter <start position> <end position>";
         }
         try {
             String param1 = params[0];
@@ -341,23 +341,9 @@ public class UI {
         if(resigning){
             return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
         }
-        GameList games = server.getGames();
-        ArrayList<Integer> nums = new ArrayList<>();
-        for(GameResult game : games.games()){
-            nums.add(game.gameID());
-        }
-        int iD;
-        try{
-            iD = Integer.parseInt(params[0]);
-        } catch (NumberFormatException e) {
-            return "Invalid game ID";
-        }
-        if(nums.contains(iD)) {
-            String result = "";
-            socket.redraw(Integer.parseInt(params[0]));
-            return result;
-        }
-        return "invalid input";
+        String result = "";
+        socket.redraw();
+        return result;
     }
 
     private String legMoves(String... params){

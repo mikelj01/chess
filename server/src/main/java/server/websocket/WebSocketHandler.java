@@ -53,7 +53,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try {
             UserGameCommand message = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             switch (message.getCommandType()) {
-                case CONNECT -> connect(message.getGameID(), ctx.session, message.getAuthToken(), message);
+                case CONNECT -> connect(message.getGameID(), ctx.session, message.getAuthToken(), ctx.message());
                 case MAKE_MOVE -> move(message.getGameID(), ctx.message(), message.getAuthToken(), ctx.session);
                 case LEAVE -> leave(message.getGameID(), ctx.message(), message.getAuthToken(), ctx.session);
                 case RESIGN -> resign(message.getGameID(), ctx.message(), message.getAuthToken(), ctx.session);
@@ -73,8 +73,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.put(id, game);
     }
 
-    private void connect(int id, Session session, String auth, UserGameCommand msg) throws IOException, DBException, DataAccessException {
+    private void connect(int id, Session session, String auth, String msg) throws IOException, DBException, DataAccessException {
         try {
+            ConnectCommand sodium = new Gson().fromJson(msg, ConnectCommand.class);
+            String colr = sodium.color;
             ConnectionManager connection = connections.get(id);
             if(connection == null){
                 throw new UserException("Error: Bad Game ID");
@@ -83,7 +85,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             AuthData authorization = authDB.getAuth(auth);
             if (authorization != null) {
                 connection.add(session);
-                Notification message = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, authorization.username() + " has joined");
+                Notification message = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, authorization.username() + " has joined as " + colr);
                 connection.broadcast(session, message, null);
                 sendGame(gameDB.getGame(id), session);
             } else {
@@ -132,7 +134,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     }
                     game.makeMove(move);
                     if(game.isInCheckmate(ChessGame.TeamColor.BLACK)){
-                        connection.broadcast(null, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Wins!"), userName + " Wins!");
+                        connection.broadcast(null, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Wins by checkmating" + gameDat.whiteUsername()), userName + " Wins!");
                         game.gameOver = true;
                     }
                     else if(game.isInCheckmate(ChessGame.TeamColor.WHITE)){
@@ -154,7 +156,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     }
                     game.makeMove(move);
                     if(game.isInCheckmate(ChessGame.TeamColor.WHITE)){
-                        connection.broadcast(null, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Wins!"), userName + " Wins!");
+                        connection.broadcast(null, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Wins by Checkmating" + gameDat.blackUsername()), userName + " Wins!");
                         game.gameOver = true;
                     }
                     else if(game.isInCheckmate(ChessGame.TeamColor.BLACK)){
@@ -163,7 +165,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     gameDB.deleteGame(id);
                     newGame = gameDB.createGame(gameDat);
                     connection.broadcast(null, new LoadMessage(ServerMessage.ServerMessageType.LOAD_GAME, newGame), newGame);
-                    connection.broadcast(session, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Made a move"), userName + " Made a move" + move);
+                    connection.broadcast(session, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Made a move" + move), userName + " Made a move" + move);
                 } else{
                     throw new InvalidMoveException("You Can't Move That");
                 }
