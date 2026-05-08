@@ -202,13 +202,7 @@ public class WebSocketFacade extends Endpoint {
             }
         }
 
-        position = new ChessPosition(row, col);
-        //getting legal moves
-        Collection<ChessMove> legmoves = game.validMoves(position);
-        Collection<ChessPosition> poses = new HashSet<>();
-        for(ChessMove move : legmoves){
-            poses.add(move.getEndPosition());
-        }
+
 
         boolean toggle = false;
         ChessPiece[][] squares = board.getSquares();
@@ -227,6 +221,15 @@ public class WebSocketFacade extends Endpoint {
                     squares[squares.length - 1 - i][squares[i].length - 1 - j] = temp;
                 }
             }
+        }
+
+        position = new ChessPosition(row, col);
+        //getting legal moves
+        ui.doBoard(new GameData(currGame.gameID(), currGame.whiteUsername(), currGame.blackUsername(), currGame.gameName(), game), board);
+        Collection<ChessMove> legmoves = game.validMoves(position);
+        Collection<ChessPosition> poses = new HashSet<>();
+        for(ChessMove move : legmoves){
+            poses.add(move.getEndPosition());
         }
 
         String boardText = "";

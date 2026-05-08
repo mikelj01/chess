@@ -154,7 +154,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     gameDB.deleteGame(id);
                     newGame = gameDB.createGame(gameDat);
                     connection.broadcast(null, new LoadMessage(ServerMessage.ServerMessageType.LOAD_GAME, newGame), newGame);
-                    connection.broadcast(session, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Made a move"), userName + " Made a move" + move);
+                    connection.broadcast(session, new Notification(ServerMessage.ServerMessageType.NOTIFICATION, userName + " Made a move" + move), userName + " Made a move" + move);
 
 
                 } else if (userName != null && userName.equals(bkUser)) {
