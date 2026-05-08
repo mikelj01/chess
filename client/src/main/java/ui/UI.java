@@ -1,6 +1,9 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
 import model.*;
@@ -74,7 +77,9 @@ public class UI {
                 case "resign" -> resign(params);
                 case "yes" -> confirmRes();
                 case "no" -> denyRes();
-                case "leave" -> leave();
+                case "leave" -> leave(params);
+                case "redraw" -> reDraw(params);
+                case "game" -> gamehelp();
                 default -> help();
             });
         } catch (Exception e) {
@@ -255,8 +260,39 @@ public class UI {
         if(resigning){
             return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
         }
-        String result = "";
+        String param1 = params[1];
+        String param2 = params[2];
+        int sPRow = Integer.parseInt(param1.substring(0,1));
+        int sPCol = Integer.parseInt(param1.substring(param1.length() - 1));
 
+        int ePRow = Integer.parseInt(param2.substring(0,1));
+        int ePCol = Integer.parseInt(param2.substring(param1.length() - 1));
+
+        ChessPosition sp = new ChessPosition(sPRow, sPCol);
+        ChessPosition ep = new ChessPosition(ePRow, ePCol);
+        ChessPiece.PieceType pp = null;
+
+        if(params.length > 3) {
+            String type = params[3].toUpperCase();
+            if(type.equals("QUEEN")){
+                pp = ChessPiece.PieceType.QUEEN;
+            } else if (type.equals("ROOK")) {
+                pp = ChessPiece.PieceType.ROOK;
+            }else if (type.equals("KNIGHT")) {
+                pp = ChessPiece.PieceType.KNIGHT;
+            }else if (type.equals("BISHOP")) {
+                pp = ChessPiece.PieceType.BISHOP;
+            }else {
+                return "Incorrect promotion type.  please try again.";
+            }
+        }
+        ChessMove move = new ChessMove(sp, ep, pp);
+        int id = Integer.parseInt(params[0]);
+        if(!socket.checkConnection(id)){
+            return "please enter a game id that you are playing in.";
+        }
+        socket.makeMove(id ,move ,new AuthData(server.authToken, userName) );
+        String result = "";
         return result;
     }
 
@@ -306,9 +342,9 @@ public class UI {
         if(resigning){
             return "please confirm resignation before issuing any other commands \n Or \n type 'list' to see the list of games again";
         }
-    String result = "";
-
-    return result;
+        String result = "";
+        socket.redraw(Integer.parseInt(params[0]));
+        return result;
     }
 
     private String legMoves(String... params){
@@ -328,6 +364,11 @@ public class UI {
         PrintBoard board = new PrintBoard(gameDat.game().getBoard(), color);
         String result = board.print();
         System.out.print(result);
+    }
+
+    public String gamehelp(){
+        socket.help();
+        return "";
     }
 
     public String help(){
@@ -352,6 +393,7 @@ public class UI {
                     To logout: logout
                     To close: quit
                     To list commands again: help
+                    For help with game commands: game
                     
                     """;
         }

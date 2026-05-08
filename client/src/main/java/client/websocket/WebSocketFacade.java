@@ -45,6 +45,7 @@ public class WebSocketFacade extends Endpoint {
     HashMap<Integer, GameData> games;
     String userName;
 
+
     public WebSocketFacade(String url, UI ui) throws ResponseException {
         this.ui = ui;
         this.games = new HashMap<>();
@@ -108,6 +109,13 @@ public class WebSocketFacade extends Endpoint {
         } catch (IOException ex) {
             throw new ResponseException(500,ex.getMessage());
         }
+    }
+
+    public boolean checkConnection(int id){
+        if(games.get(id) != null){
+            return true;
+        }
+        return false;
     }
 
     public void leave(AuthData auth, int id){
@@ -200,7 +208,9 @@ public class WebSocketFacade extends Endpoint {
                     Please enter the command that corresponds with what you want to do.
                     To create redraw the board, please enter: redraw <game id>
                     To highlight legal moves, please enter: highlight <position of the piece you want to move>
-                    To make a move, please enter: <start position> <end position>
+                    To make a move, please enter: <game id> <start position> <end position> <promotion piece> 
+                            (example of promotion: 7,8 8,8 knight)
+                            If you are not promoting, leave it empty, ex:1,1 2,2)
                     To resign, please enter: resign <game id>
                     To leave, please enter: leave <game id>
                     To see this message again, enter: help
